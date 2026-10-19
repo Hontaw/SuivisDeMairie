@@ -1,0 +1,1559 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Suivi des heures · Mairie</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F3F5F8; --surface:#FFFFFF; --surface-2:#F8F9FB; --hover:#F2F5FB;
+  --border:#E2E6EC; --border-strong:#C9D0DA;
+  --ink:#1A2740; --muted:#5D6A7E; --faint:#9AA4B3;
+  --accent:#2C5BC4; --accent-hover:#234AA3; --accent-soft:#E9EFFC; --accent-line:#C9D7F5;
+  --ok:#13875E; --ok-soft:#E4F4EC;
+  --warn:#B86E00; --warn-soft:#FFF3DC; --warn-line:#F2D59B;
+  --danger:#C8352B; --danger-soft:#FCEBE9;
+  --ma:#178C7E; --ma-soft:#E2F3F0;
+  --cmj:#8A4CB5; --cmj-soft:#F3EAF9;
+  --oth:#5D6A7E; --oth-soft:#EEF0F4;
+  --r-lg:14px; --r:10px; --r-sm:8px;
+  --sh-sm:0 1px 2px rgba(20,32,56,.05);
+  --sh:0 1px 3px rgba(20,32,56,.06),0 6px 16px rgba(20,32,56,.05);
+  --sh-lg:0 18px 48px rgba(20,32,56,.18),0 2px 8px rgba(20,32,56,.06);
+  --ease:cubic-bezier(.22,.8,.24,1);
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:14px/1.45 'Public Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+body.noscroll{overflow:hidden}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+.num{font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.faint{color:var(--faint)}
+.r{text-align:right}
+.nowrap{white-space:nowrap}
+svg{flex:none}
+
+/* ---------- Barre du haut ---------- */
+.topbar{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.88);backdrop-filter:saturate(1.4) blur(10px);-webkit-backdrop-filter:saturate(1.4) blur(10px);border-bottom:1px solid var(--border)}
+.topbar-inner{max-width:1320px;margin:0 auto;padding:10px 24px;display:flex;align-items:center;gap:18px}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.brand-mark{width:38px;height:38px;border-radius:11px;background:var(--ink);color:#fff;display:grid;place-items:center}
+.brand h1{margin:0;font-size:16px;font-weight:700;letter-spacing:-.01em;white-space:nowrap}
+.brand p{margin:0;font-size:12.5px;color:var(--muted);white-space:nowrap}
+.file-status{margin-left:auto;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted);min-width:0}
+.file-status .fname{display:flex;align-items:center;gap:6px;color:var(--ink);min-width:0}
+.file-status .fname b{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:240px}
+.st{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;white-space:nowrap}
+.st.dirty{color:var(--warn)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--faint);display:inline-block}
+.dot.saved{background:var(--ok)}
+.dot.dirty{background:var(--warn);animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(184,110,0,.45)}60%{box-shadow:0 0 0 6px rgba(184,110,0,0)}}
+.chip-demo{background:var(--accent-soft);color:var(--accent);font-weight:600;font-size:12px;padding:3px 9px;border-radius:99px}
+.top-actions{display:flex;align-items:center;gap:8px}
+
+/* ---------- Boutons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:36px;padding:0 14px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--surface);font-weight:600;font-size:13.5px;white-space:nowrap;transition:background .15s,border-color .15s,color .15s,transform .1s;position:relative}
+.btn:hover{background:var(--surface-2);border-color:var(--border-strong)}
+.btn:active{transform:translateY(1px)}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent-hover);border-color:var(--accent-hover)}
+.btn-ghost{background:transparent;border-color:transparent}
+.btn-ghost:hover{background:var(--surface-2);border-color:transparent}
+.btn-icon{width:36px;padding:0}
+.btn-sm{height:32px;padding:0 11px;font-size:13px}
+.btn-xs{height:26px;padding:0 8px;font-size:12px;border-radius:7px;gap:4px}
+.btn-danger{background:var(--danger);border-color:var(--danger);color:#fff}
+.btn-danger:hover{background:#A92A21;border-color:#A92A21}
+.btn-danger-ghost{background:transparent;border-color:transparent;color:var(--danger)}
+.btn-danger-ghost:hover{background:var(--danger-soft);border-color:transparent}
+.btn .bdot{position:absolute;top:-3px;right:-3px;width:10px;height:10px;border-radius:50%;background:var(--warn);border:2px solid #fff;transform:scale(0);transition:transform .25s var(--ease)}
+.btn.attn .bdot{transform:scale(1)}
+.icon-btn{border:0;background:transparent;width:28px;height:28px;border-radius:7px;display:inline-grid;place-items:center;color:var(--faint);transition:background .15s,color .15s}
+.icon-btn:hover{background:var(--danger-soft);color:var(--danger)}
+
+/* menu */
+.menu-anchor{position:relative}
+.menu{position:absolute;right:0;top:calc(100% + 6px);background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--sh-lg);padding:6px;min-width:230px;opacity:0;transform:translateY(-4px);pointer-events:none;transition:opacity .15s,transform .15s var(--ease);z-index:50}
+.menu.open{opacity:1;transform:none;pointer-events:auto}
+.menu button{display:flex;align-items:center;gap:10px;width:100%;border:0;background:transparent;text-align:left;padding:9px 10px;border-radius:8px;font-size:13.5px}
+.menu button:hover{background:var(--hover)}
+.menu hr{border:0;border-top:1px solid var(--border);margin:6px 2px}
+
+/* ---------- Mise en page ---------- */
+.wrap{max-width:1320px;margin:0 auto;padding:20px 24px 90px}
+.toolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:18px}
+
+/* contrôles segmentés avec pastille glissante */
+.seg{position:relative;display:inline-flex;background:#E7EAF0;border-radius:11px;padding:3px}
+.seg>button{position:relative;z-index:1;border:0;background:transparent;padding:7px 14px;border-radius:8px;font-weight:600;font-size:13.5px;color:var(--muted);white-space:nowrap;display:inline-flex;align-items:center;gap:7px;transition:color .2s}
+.seg>button:hover,.seg>button.active{color:var(--ink)}
+.seg>.pill{position:absolute;top:3px;bottom:3px;left:3px;width:0;background:#fff;border-radius:8px;box-shadow:0 1px 2px rgba(20,32,56,.10),0 1px 1px rgba(20,32,56,.04);transition:left .32s var(--ease),width .32s var(--ease)}
+.seg.sm>button{padding:5px 11px;font-size:12.5px}
+.sdot{width:8px;height:8px;border-radius:50%;display:inline-block;background:var(--oth)}
+.sdot.ma{background:var(--ma)} .sdot.cmj{background:var(--cmj)}
+
+.period{display:inline-flex;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:2px;box-shadow:var(--sh-sm)}
+.period button{border:0;background:transparent;width:32px;height:32px;border-radius:8px;display:grid;place-items:center;color:var(--muted)}
+.period button:hover{background:var(--hover);color:var(--ink)}
+.period select{border:0;background:transparent;font-weight:600;padding:0 6px;height:32px;cursor:pointer;-webkit-appearance:none;appearance:none;border-radius:8px}
+.period select:hover{background:var(--hover)}
+.period select:focus{outline:none}
+.period select:focus-visible{outline:2px solid var(--accent)}
+
+.search{margin-left:auto;display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:0 10px;height:38px;min-width:250px;box-shadow:var(--sh-sm);transition:border-color .15s,box-shadow .15s;color:var(--faint)}
+.search:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.search input{border:0;outline:0;background:transparent;flex:1;height:100%;color:var(--ink);min-width:0}
+.search kbd{font:600 11px 'Public Sans',sans-serif;color:var(--faint);border:1px solid var(--border);border-bottom-width:2px;border-radius:5px;padding:0 6px;line-height:17px}
+
+/* ---------- Indicateurs ---------- */
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:18px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px 18px 15px;box-shadow:var(--sh-sm);min-width:0}
+.kpi-top{display:flex;align-items:center;gap:9px}
+.kpi-ic{width:28px;height:28px;border-radius:8px;display:grid;place-items:center}
+.kpi-ic.t1{background:#EEF1F6;color:var(--ink)}
+.kpi-ic.t2{background:var(--accent-soft);color:var(--accent)}
+.kpi-ic.t3{background:var(--warn-soft);color:var(--warn)}
+.kpi-ic.t4{background:var(--cmj-soft);color:var(--cmj)}
+.kpi-label{font-size:13px;color:var(--muted);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kpi-value{font-size:28px;font-weight:700;letter-spacing:-.02em;margin-top:8px;line-height:1.1}
+.kpi-sub{font-size:12.5px;color:var(--muted);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kpi-sub .w{color:var(--warn);font-weight:600}
+.kpi-sub .g{color:var(--ok);font-weight:600}
+
+/* ---------- Cartes & tableaux ---------- */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--sh-sm);overflow:hidden}
+.card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.card-head h2{margin:0;font-size:15px;font-weight:700}
+.card-head p{margin:2px 0 0;font-size:12.5px;color:var(--muted)}
+.head-actions{display:flex;gap:8px;flex-wrap:wrap}
+.table-scroll{overflow-x:auto}
+table.grid{width:100%;border-collapse:separate;border-spacing:0}
+.grid th{font-size:12.5px;color:var(--muted);font-weight:600;text-align:left;padding:10px 14px;background:var(--surface-2);border-bottom:1px solid var(--border);white-space:nowrap;user-select:none}
+.grid th.r{text-align:right}
+.grid th.sortable{cursor:pointer;transition:color .15s}
+.grid th.sortable:hover,.grid th.sorted{color:var(--ink)}
+.grid th .arr{display:inline-block;margin-left:5px;font-size:11px;color:var(--faint);width:9px}
+.grid th.sorted .arr{color:var(--accent)}
+.grid td{padding:11px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
+.grid tbody tr:last-child td{border-bottom:0}
+.grid tr.row{cursor:pointer;transition:background .15s}
+.grid tr.row:hover{background:var(--hover)}
+.grid tr.row:hover .chev{color:var(--accent);transform:translateX(2px)}
+.grid tr.group td{background:var(--surface-2);font-weight:600;font-size:13px;padding:9px 14px;border-bottom:1px solid var(--border)}
+.grid tr.group td .muted{font-weight:500}
+.grid tfoot td{background:var(--surface-2);font-weight:700;border-top:1px solid var(--border);border-bottom:0;padding:11px 14px}
+.chev{color:var(--faint);transition:color .15s,transform .2s var(--ease);width:36px}
+
+.agent{display:flex;align-items:center;gap:11px;min-width:0}
+.agent-txt{min-width:0}
+.avatar{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-weight:700;font-size:12.5px;flex:none;background:var(--oth-soft);color:var(--oth)}
+.avatar.ma{background:var(--ma-soft);color:var(--ma)}
+.avatar.cmj{background:var(--cmj-soft);color:var(--cmj)}
+.avatar.lg{width:48px;height:48px;border-radius:14px;font-size:16px}
+.name{font-weight:600;white-space:nowrap}
+.name-btn{border:0;background:none;padding:0;font-weight:600;text-align:left;white-space:nowrap}
+.name-btn:hover{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+.sub{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:280px}
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:2px 9px;border-radius:99px;background:var(--oth-soft);color:var(--oth)}
+.badge.ma{background:var(--ma-soft);color:var(--ma)}
+.badge.cmj{background:var(--cmj-soft);color:var(--cmj)}
+
+.val{white-space:nowrap}
+.val b{font-weight:600}
+.bar{height:6px;border-radius:99px;background:#ECEFF4;overflow:hidden;margin-top:6px;min-width:110px;max-width:200px}
+.bar>i{display:block;height:100%;border-radius:inherit;background:var(--accent);transform-origin:left center}
+.bar.soft>i{background:#7F9BD9}
+.bar.over>i{background:var(--warn)}
+.hs-pill{display:inline-block;background:var(--warn-soft);color:var(--warn);font-weight:700;font-size:12.5px;padding:3px 9px;border-radius:99px}
+.chip{display:inline-flex;align-items:center;gap:5px;border:1px dashed var(--warn-line);background:var(--warn-soft);color:var(--warn);font-weight:600;font-size:12.5px;padding:4px 10px;border-radius:99px;transition:background .15s,border-color .15s}
+.chip:hover{border-style:solid;border-color:var(--warn)}
+
+.spark{display:flex;align-items:flex-end;gap:2px;height:26px}
+.spark i{display:block;width:5px;border-radius:2px;background:#D6DCE6;transform-origin:bottom}
+.spark i.has{background:#B7C3D9}
+.spark i.on{background:var(--accent)}
+
+/* animations déclenchées par l'action (changement de période, filtre, chargement) */
+.anim tr.row,.anim tr.srow{animation:rowIn .45s var(--ease) both;animation-delay:calc(var(--i,0) * 28ms)}
+.anim .bar>i{animation:growX .8s var(--ease) both;animation-delay:calc(var(--i,0) * 28ms + 120ms)}
+.anim .spark i{animation:growY .6s var(--ease) both;animation-delay:calc(var(--k,0) * 22ms + 150ms)}
+.anim .chart .b{animation:growY .7s var(--ease) both;animation-delay:calc(var(--k,0) * 35ms)}
+@keyframes rowIn{from{opacity:0;transform:translateY(6px)}}
+@keyframes growX{from{transform:scaleX(0)}}
+@keyframes growY{from{transform:scaleY(0)}}
+
+/* ---------- Saisie ---------- */
+.info-strip{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:14px 18px;border-bottom:1px solid var(--border);background:linear-gradient(0deg,var(--surface),var(--surface-2))}
+.info-strip .ic{width:34px;height:34px;border-radius:10px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center}
+.info-strip .t b{font-size:15px}
+.info-strip .t div{font-size:12.5px;color:var(--muted)}
+.progress{display:flex;align-items:center;gap:10px;margin-left:auto;font-size:12.5px;color:var(--muted)}
+.progress .bar{margin:0;width:140px;min-width:140px}
+.progress .bar>i{transition:width .5s var(--ease);background:var(--ok)}
+.cell-input{width:120px;height:36px;border:1px solid var(--border);border-radius:var(--r-sm);padding:0 10px;text-align:right;font-weight:600;background:#fff;transition:border-color .15s,box-shadow .15s,background .3s}
+.cell-input::placeholder{color:#C3CAD5;font-weight:500}
+.cell-input:hover{border-color:var(--border-strong)}
+.cell-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.cell-input.err{border-color:var(--danger);box-shadow:0 0 0 3px var(--danger-soft)}
+.cell-input.saved{animation:flashOk 1s ease}
+@keyframes flashOk{0%{background:var(--ok-soft);border-color:var(--ok)}100%{background:#fff}}
+.cell-input.sm{width:100%;height:34px}
+.ec{font-weight:600;font-size:12.5px;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.ec.ok{color:var(--ok)} .ec.pos{color:var(--warn)} .ec.neg{color:var(--muted)}
+.hs-cell{display:inline-block;min-width:54px;text-align:right;margin-right:8px}
+.saisie-hint{padding:12px 18px;font-size:12.5px;color:var(--muted);border-top:1px solid var(--border);background:var(--surface-2)}
+.saisie-hint kbd{font:600 11px 'Public Sans',sans-serif;border:1px solid var(--border);border-bottom-width:2px;border-radius:5px;padding:0 5px;background:#fff}
+
+/* ---------- Accueil / vide ---------- */
+.welcome{padding:56px 24px;text-align:center}
+.welcome .w-ic{width:58px;height:58px;border-radius:16px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;margin:0 auto 18px}
+.welcome h2{margin:0 0 6px;font-size:20px;letter-spacing:-.01em}
+.welcome p{margin:0 auto;max-width:520px;color:var(--muted)}
+.w-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:22px 0 18px}
+.welcome .hint{font-size:12.5px;color:var(--faint)}
+.empty-row td{padding:34px 14px;text-align:center;color:var(--muted)}
+
+/* ---------- Fiche agent (tiroir) ---------- */
+.backdrop{position:fixed;inset:0;background:rgba(18,28,48,.32);opacity:0;pointer-events:none;transition:opacity .25s;z-index:40}
+.backdrop.show{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(680px,100vw);background:var(--surface);box-shadow:var(--sh-lg);transform:translateX(102%);transition:transform .38s var(--ease);z-index:41;display:flex;flex-direction:column;visibility:hidden}
+.drawer.show{transform:none;visibility:visible}
+.d-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:20px 24px 16px;border-bottom:1px solid var(--border)}
+.d-head h2{margin:0;font-size:19px;letter-spacing:-.01em}
+.d-head .sub{max-width:none;margin-top:3px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;white-space:normal}
+.d-actions{display:flex;gap:6px}
+.d-body{flex:1;overflow:auto;padding:18px 24px 48px}
+.d-yearbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.d-yearbar .muted{font-size:13px}
+.stepper{display:inline-flex;align-items:center;gap:4px;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:2px}
+.stepper button{border:0;background:transparent;width:28px;height:28px;border-radius:7px;display:grid;place-items:center;color:var(--muted)}
+.stepper button:hover{background:#fff;color:var(--ink)}
+.stepper b{min-width:44px;text-align:center;font-size:13.5px}
+.d-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.stat{border:1px solid var(--border);border-radius:12px;padding:12px 14px;background:var(--surface-2);min-width:0}
+.stat>span{font-size:12.5px;color:var(--muted);display:block}
+.stat>b{display:block;font-size:22px;font-weight:700;letter-spacing:-.02em;margin-top:2px}
+.stat>small{font-size:12px;color:var(--muted)}
+.stat .bar{max-width:none;margin-top:8px}
+.comp{display:flex;flex-direction:column;gap:5px;margin-top:6px;font-size:13px}
+.comp div{display:flex;align-items:center;gap:7px}
+.comp b{margin-left:auto}
+.cdot{width:8px;height:8px;border-radius:3px;display:inline-block}
+.cdot.pay,.comp-badge.pay{background:var(--accent)} .cdot.rec{background:var(--ma)} .cdot.tbd{background:var(--faint)}
+.comp-badge{display:inline-block;font-size:12px;font-weight:600;padding:2px 8px;border-radius:99px;white-space:nowrap}
+.comp-badge.pay{background:var(--accent-soft);color:var(--accent)}
+.comp-badge.rec{background:var(--ma-soft);color:var(--ma)}
+.comp-badge.tbd{background:var(--oth-soft);color:var(--muted)}
+.d-sec{margin-top:24px}
+.d-sec-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.d-sec-head h3{margin:0;font-size:14.5px;font-weight:700}
+.d-sec-head .muted{font-size:12.5px}
+.d-tools{display:flex;align-items:center;gap:8px}
+
+.chart{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:6px;align-items:end;height:150px;padding:6px 8px 0;border:1px solid var(--border);border-radius:12px;background:linear-gradient(180deg,#fff,var(--surface-2))}
+.chart .col{border:0;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:5px;height:100%;padding:4px 0 8px;border-radius:8px;transition:background .15s}
+.chart .col:hover{background:rgba(44,91,196,.06)}
+.chart .v{font-size:10.5px;color:var(--muted);font-weight:600;min-height:14px;white-space:nowrap}
+.chart .b{width:72%;max-width:30px;border-radius:6px 6px 3px 3px;background:#CBD6EC;transform-origin:bottom;transition:background .2s,height .4s var(--ease)}
+.chart .col:hover .b{background:#A9BBE3}
+.chart .col.sel .b{background:var(--accent)}
+.chart .col.sel .v,.chart .col.sel .m{color:var(--accent)}
+.chart .m{font-size:11px;color:var(--muted);font-weight:600}
+
+.mnav{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.mnav .total{margin-left:auto;font-size:13px;color:var(--muted)}
+.mnav .total b{color:var(--ink)}
+.mnav label{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);cursor:pointer}
+.grid.compact td{padding:9px 12px}
+.grid.compact th{padding:8px 12px}
+.grid tr.subhead td{background:#FAFBFC;font-size:13px;padding:8px 12px;border-bottom:1px solid var(--border)}
+.grid tr.subhead .sub-total{float:right;font-weight:700}
+.motif{max-width:220px}
+.empty-sm{border:1px dashed var(--border-strong);border-radius:12px;padding:22px;text-align:center;color:var(--muted)}
+.empty-sm p{margin:6px 0 12px}
+.box{border:1px solid var(--border);border-radius:12px;overflow:hidden}
+
+.months-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.mcell{border:1px solid var(--border);border-radius:10px;padding:8px 10px 9px;background:var(--surface-2);transition:border-color .2s}
+.mcell.cur{border-color:var(--accent-line);background:var(--accent-soft)}
+.mcell label{font-size:12px;font-weight:700;color:var(--muted);display:flex;justify-content:space-between;margin-bottom:5px}
+.mcell label span{font-weight:500;color:var(--faint)}
+.mcell .mec{margin-top:5px;min-height:18px}
+.year-total{margin-top:12px;font-size:13px;color:var(--muted);display:flex;gap:16px;flex-wrap:wrap}
+.year-total b{color:var(--ink)}
+
+/* ---------- Fenêtres ---------- */
+.modal-wrap{position:fixed;inset:0;display:grid;place-items:center;padding:16px;z-index:60;background:rgba(18,28,48,.42);opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-wrap.show{opacity:1;pointer-events:auto}
+.modal{background:#fff;border-radius:16px;width:min(500px,100%);max-height:calc(100vh - 32px);overflow:auto;box-shadow:var(--sh-lg);transform:translateY(12px) scale(.98);transition:transform .28s var(--ease)}
+.modal-wrap.show .modal{transform:none}
+.m-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px 6px}
+.m-head h3{margin:0;font-size:17px}
+.m-body{padding:10px 20px 6px}
+.m-body p{margin:0 0 8px;color:var(--muted)}
+.m-foot{display:flex;align-items:center;gap:8px;padding:14px 20px 18px}
+.spacer{flex:1}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;min-width:0}
+.field>label,.field>.lbl{font-size:12.5px;font-weight:600;color:var(--muted)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.input{height:40px;border:1px solid var(--border);border-radius:var(--r-sm);padding:0 12px;background:#fff;width:100%;transition:border-color .15s,box-shadow .15s}
+.input:hover{border-color:var(--border-strong)}
+.input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.input.err{border-color:var(--danger);box-shadow:0 0 0 3px var(--danger-soft)}
+select.input{-webkit-appearance:none;appearance:none;padding-right:34px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235D6A7E' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center}
+.hint{font-size:12px;color:var(--faint)}
+.quick{display:flex;gap:6px;flex-wrap:wrap}
+.qchip{border:1px solid var(--border);background:var(--surface-2);border-radius:99px;padding:3px 10px;font-size:12px;font-weight:600;color:var(--muted);transition:all .15s}
+.qchip:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.radio-seg{display:flex;gap:6px;flex-wrap:wrap}
+.radio-seg label{position:relative;cursor:pointer}
+.radio-seg input{position:absolute;opacity:0;pointer-events:none}
+.radio-seg span{display:inline-flex;align-items:center;gap:7px;padding:8px 13px;border:1px solid var(--border);border-radius:9px;font-weight:600;font-size:13px;color:var(--muted);transition:all .15s;background:#fff}
+.radio-seg label:hover span{border-color:var(--border-strong);color:var(--ink)}
+.radio-seg input:checked+span{border-color:var(--accent);color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 1px var(--accent) inset}
+.radio-seg input:focus-visible+span{outline:2px solid var(--accent);outline-offset:2px}
+.opt-cards{display:flex;flex-direction:column;gap:8px}
+.opt-cards label{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--border);border-radius:10px;padding:10px 12px;cursor:pointer;transition:all .15s}
+.opt-cards label:hover{border-color:var(--border-strong)}
+.opt-cards label:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.opt-cards input{margin-top:3px;accent-color:var(--accent)}
+.opt-cards b{display:block;font-size:13.5px}
+.opt-cards small{color:var(--muted);font-size:12.5px}
+
+/* ---------- Notifications ---------- */
+.toasts{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);display:flex;flex-direction:column;gap:8px;z-index:90;align-items:center;pointer-events:none;width:max-content;max-width:calc(100vw - 32px)}
+.toast{pointer-events:auto;background:#1A2740;color:#fff;padding:10px 12px 10px 14px;border-radius:11px;font-size:13.5px;box-shadow:var(--sh-lg);display:flex;gap:10px;align-items:center;animation:toastIn .32s var(--ease)}
+.toast.out{animation:toastOut .22s ease forwards}
+.toast .t-ic{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;flex:none;background:rgba(255,255,255,.14)}
+.toast.ok .t-ic{background:#1E9C6E}
+.toast.err .t-ic{background:var(--danger);font-weight:700;font-size:12px}
+.toast button{border:0;background:rgba(255,255,255,.1);color:#B9CBFF;font-weight:700;padding:5px 10px;border-radius:7px;margin-left:4px}
+.toast button:hover{background:rgba(255,255,255,.18)}
+@keyframes toastIn{from{opacity:0;transform:translateY(12px) scale(.97)}}
+@keyframes toastOut{to{opacity:0;transform:translateY(8px)}}
+
+/* ---------- Démo, pied de page, glisser-déposer ---------- */
+.demo-btn{position:fixed;right:16px;bottom:14px;z-index:20;font-size:12px;font-weight:500;color:var(--faint);background:rgba(255,255,255,.7);border:1px dashed var(--border-strong);border-radius:99px;padding:5px 11px;opacity:.75;transition:opacity .2s,color .2s,border-color .2s}
+.demo-btn:hover{opacity:1;color:var(--muted);border-color:var(--muted)}
+.foot{margin-top:22px;font-size:12px;color:var(--faint)}
+.drop{position:fixed;inset:12px;border:2px dashed var(--accent);border-radius:20px;background:rgba(233,239,252,.92);display:grid;place-items:center;z-index:100;opacity:0;pointer-events:none;transition:opacity .15s}
+.drop.show{opacity:1}
+.drop div{display:flex;flex-direction:column;align-items:center;gap:10px;color:var(--accent);font-weight:700;font-size:17px}
+
+/* ---------- Responsive ---------- */
+@media (max-width:1080px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:760px){
+  .topbar-inner{padding:10px 14px;flex-wrap:wrap}
+  .brand p{display:none}
+  .file-status{order:3;width:100%;margin-left:0}
+  .top-actions{margin-left:auto}
+  .top-actions .lbl{display:none}
+  .wrap{padding:14px 14px 90px}
+  .search{min-width:0;width:100%;margin-left:0}
+  .kpi-value{font-size:23px}
+  .d-stats{grid-template-columns:1fr}
+  .months-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .row2{grid-template-columns:1fr}
+  .progress{margin-left:0;width:100%}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-mark" id="brandMark"></div>
+      <div>
+        <h1>Suivi des heures</h1>
+        <p>Mairie, services Multi Accueil et CMJ</p>
+      </div>
+    </div>
+    <div class="file-status" id="fileStatus"></div>
+    <div class="top-actions">
+      <button class="btn" data-action="open" id="openBtn" title="Ouvrir un fichier de suivi (.json)"></button>
+      <button class="btn btn-primary" data-action="save" id="saveBtn" title="Enregistrer (Ctrl+S)"></button>
+      <div class="menu-anchor">
+        <button class="btn btn-icon" data-action="toggle-menu" id="moreBtn" title="Plus d'options" aria-haspopup="true"></button>
+        <div class="menu" id="mainMenu" role="menu"></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="toolbar">
+    <div class="seg" id="viewSeg" role="tablist">
+      <span class="pill"></span>
+      <button data-view="dash" class="active" role="tab">Tableau de bord</button>
+      <button data-view="saisie" role="tab">Saisie du mois</button>
+    </div>
+    <div class="period" id="period">
+      <button data-action="prev-month" title="Mois précédent" id="prevBtn"></button>
+      <select id="monthSel" aria-label="Mois"></select>
+      <select id="yearSel" aria-label="Année"></select>
+      <button data-action="next-month" title="Mois suivant" id="nextBtn"></button>
+    </div>
+    <div class="seg" id="serviceSeg"></div>
+    <label class="search" id="searchBox">
+      <span id="searchIc"></span>
+      <input id="search" type="search" placeholder="Rechercher un agent" autocomplete="off">
+      <kbd>/</kbd>
+    </label>
+  </div>
+
+  <section class="kpis" id="kpis" hidden></section>
+  <section id="viewArea"></section>
+  <div class="foot" id="foot"></div>
+</main>
+
+<button class="demo-btn" data-action="load-demo" title="Charger 7 agents fictifs sur 3 mois">Données de démo</button>
+
+<div class="backdrop" id="backdrop"></div>
+<aside class="drawer" id="drawer" aria-label="Fiche agent"></aside>
+<div class="modal-wrap" id="modalWrap"><div class="modal" id="modal" role="dialog" aria-modal="true"></div></div>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<div class="drop" id="drop"><div id="dropInner">Déposez votre fichier de suivi (.json)</div></div>
+<input type="file" id="fileInput" accept=".json,application/json" hidden>
+
+<script>
+(() => {
+'use strict';
+
+/* =========================================================
+   Constantes
+   ========================================================= */
+const APP_VERSION = 'V0.0.1';
+const LS_KEY = 'suiviHeuresMairie.brouillon';
+const DEFAULT_SERVICES = ['Multi Accueil', 'CMJ'];
+const SERVICE_CLS = { 'Multi Accueil': 'ma', 'CMJ': 'cmj' };
+const MONTHS = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+const MONTHS_SHORT = ['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
+const COMPS = ['À définir','Paiement','Récupération'];
+const COMP_CLS = { 'À définir':'tbd', 'Paiement':'pay', 'Récupération':'rec' };
+const NBSP = ' ';
+
+/* =========================================================
+   Icônes
+   ========================================================= */
+const P = {
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  folder:'<path d="M3 7.5A2.5 2.5 0 0 1 5.5 5H9l2 2h7.5A2.5 2.5 0 0 1 21 9.5v7a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 16.5z"/>',
+  save:'<path d="M5 3h11l5 5v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M7 3v5h8V3"/><path d="M7 21v-7h10v7"/>',
+  more:'<circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/>',
+  search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+  chevL:'<path d="m15 18-6-6 6-6"/>', chevR:'<path d="m9 18 6-6-6-6"/>',
+  x:'<path d="M18 6 6 18M6 6l12 12"/>', plus:'<path d="M12 5v14M5 12h14"/>',
+  pencil:'<path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4z"/>',
+  trash:'<path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6"/>',
+  users:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',
+  calendar:'<rect x="3" y="4.5" width="18" height="17" rx="2.5"/><path d="M16 2.5v4M8 2.5v4M3 10h18"/>',
+  trend:'<path d="m22 7-8.5 8.5-5-5L2 17"/><path d="M16 7h6v6"/>',
+  sliders:'<path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/>',
+  check:'<path d="M20 6 9 17l-5-5"/>',
+  download:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>',
+  file:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/>',
+  filePlus:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M12 18v-6M9 15h6"/>',
+  saveAs:'<path d="M12 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v4"/><path d="M7 3v5h8V3M16 19h6M19 16v6"/>',
+  upload:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>',
+};
+const ic = (n, s = 16, sw = 2) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[n] || ''}</svg>`;
+
+/* =========================================================
+   Utilitaires
+   ========================================================= */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+const pad = n => String(n).padStart(2, '0');
+const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+const mkey = (y, m) => `${y}-${pad(m + 1)}`;
+const uid = p => `${p}-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
+const valid = v => typeof v === 'number' && isFinite(v);
+const norm = s => String(s ?? '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+const plural = (n, w, wp) => `${n}${NBSP}${n > 1 ? (wp || w + 's') : w}`;
+const reduceMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* Durées : stockées en minutes. Saisie acceptée : 7h24, 7:24, 7,4, 7.4, 7h, 45min */
+function parseDuration(v) {
+  if (v === null || v === undefined) return null;
+  if (typeof v === 'number') return isFinite(v) ? Math.round(v * 60) : NaN;
+  let s = String(v).trim().toLowerCase().replace(/\s+/g, '');
+  if (!s) return null;
+  let sign = 1;
+  if (s[0] === '-' || s[0] === '−') { sign = -1; s = s.slice(1); }
+  let m;
+  if ((m = s.match(/^(\d+)(?:h|:)(\d{1,2})?(?:m|mn|min)?$/))) {
+    const mm = m[2] ? +m[2] : 0;
+    if (mm >= 60) return NaN;
+    return sign * (+m[1] * 60 + mm);
+  }
+  if ((m = s.match(/^(\d+)(?:[.,](\d+))?h?$/))) return sign * Math.round(parseFloat(`${m[1]}.${m[2] || '0'}`) * 60);
+  if ((m = s.match(/^(\d+)(?:m|mn|min)$/))) return sign * +m[1];
+  return NaN;
+}
+function fmt(min, o = {}) {
+  if (min === null || min === undefined || !valid(min)) return '—';
+  const neg = min < 0; min = Math.abs(Math.round(min));
+  const h = Math.floor(min / 60), mm = min % 60;
+  const s = (mm || o.full) ? `${h}h${pad(mm)}` : `${h}h`;
+  return (neg ? '−' : (o.sign && min > 0 ? '+' : '')) + s;
+}
+const toHHMM = min => { const neg = min < 0; min = Math.abs(Math.round(min)); return `${neg ? '-' : ''}${Math.floor(min / 60)}:${pad(min % 60)}`; };
+function fmtDate(s) {
+  const [y, m, d] = s.split('-').map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' });
+}
+const todayISO = () => { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; };
+
+/* Jours fériés (France métropolitaine) et jours ouvrés */
+const holidayCache = {};
+function easter(y) {
+  const a = y % 19, b = Math.floor(y / 100), c = y % 100, d = Math.floor(b / 4), e = b % 4,
+    f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30,
+    i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451),
+    month = Math.floor((h + l - 7 * m + 114) / 31), day = ((h + l - 7 * m + 114) % 31) + 1;
+  return new Date(y, month - 1, day);
+}
+function holidays(y) {
+  if (holidayCache[y]) return holidayCache[y];
+  const e = easter(y), add = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+  const list = [new Date(y,0,1), add(e,1), new Date(y,4,1), new Date(y,4,8), add(e,39), add(e,50),
+    new Date(y,6,14), new Date(y,7,15), new Date(y,10,1), new Date(y,10,11), new Date(y,11,25)];
+  return (holidayCache[y] = new Set(list.map(d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`)));
+}
+const wdCache = {};
+function workingDays(y, m) {
+  const k = mkey(y, m);
+  if (wdCache[k] !== undefined) return wdCache[k];
+  const H = holidays(y), days = new Date(y, m + 1, 0).getDate();
+  let n = 0;
+  for (let d = 1; d <= days; d++) {
+    const w = new Date(y, m, d).getDay();
+    if (w === 0 || w === 6 || H.has(`${y}-${pad(m + 1)}-${pad(d)}`)) continue;
+    n++;
+  }
+  return (wdCache[k] = n);
+}
+
+/* =========================================================
+   État
+   ========================================================= */
+const emptyData = () => ({ settings: { dailyMin: 444, annualMin: 1607 * 60, mode: 'ouvres' }, services: [...DEFAULT_SERVICES], agents: [], hs: [] });
+const now0 = new Date();
+const state = {
+  data: emptyData(),
+  dirty: false,
+  source: 'none',          // none | file | demo | new | draft
+  fileName: null,
+  ui: { view: 'dash', year: now0.getFullYear(), month: now0.getMonth(), service: 'Tous', q: '', sort: { key: 'name', dir: 1 }, drawer: null }
+};
+let fileHandle = null, lastHandle = null, modalResolver = null;
+
+const agentById = id => state.data.agents.find(a => a.id === id);
+const svcCls = s => SERVICE_CLS[s] || 'oth';
+const initials = a => ((a.prenom || '').charAt(0) + (a.nom || '').charAt(0)).toUpperCase() || '?';
+const fullName = a => `${a.prenom} ${a.nom}`.trim();
+const q100 = a => (a.quotite ?? 100) / 100;
+
+function theoMonth(a, y, m) {
+  const s = state.data.settings;
+  const base = s.mode === 'lisse' ? s.annualMin / 12 : workingDays(y, m) * s.dailyMin;
+  return Math.round(base * q100(a));
+}
+const theoYear = a => Math.round(state.data.settings.annualMin * q100(a));
+const monthHours = (a, y, m) => a.heures[mkey(y, m)] ?? null;
+function yearHours(a, y) { let t = 0; for (let m = 0; m < 12; m++) t += a.heures[mkey(y, m)] || 0; return t; }
+const hsSum = l => l.reduce((t, h) => t + h.min, 0);
+const hsMonth = (id, y, m) => { const k = mkey(y, m); return state.data.hs.filter(h => h.agentId === id && h.date.startsWith(k)); };
+const hsYear = (id, y) => state.data.hs.filter(h => h.agentId === id && h.date.startsWith(`${y}-`));
+function hsByMonth(id, y) { const arr = Array(12).fill(0); hsYear(id, y).forEach(h => { arr[+h.date.slice(5, 7) - 1] += h.min; }); return arr; }
+
+function visibleAgents() {
+  const { service, q } = state.ui, qq = norm(q.trim());
+  return state.data.agents.filter(a => (service === 'Tous' || a.service === service) &&
+    (!qq || norm(`${a.prenom} ${a.nom} ${a.poste} ${a.service}`).includes(qq)));
+}
+function groupAgents(list) {
+  const map = new Map(); state.data.services.forEach(s => map.set(s, []));
+  list.forEach(a => { if (!map.has(a.service)) map.set(a.service, []); map.get(a.service).push(a); });
+  return [...map.entries()].filter(([, arr]) => arr.length);
+}
+
+/* =========================================================
+   Fichier JSON (format lisible et modifiable à la main)
+   ========================================================= */
+function toFile() {
+  const d = state.data;
+  return {
+    app: 'suivi-heures-mairie',
+    version: APP_VERSION,
+    enregistreLe: new Date().toISOString(),
+    parametres: {
+      dureeJournaliere: toHHMM(d.settings.dailyMin),
+      baseAnnuelle: toHHMM(d.settings.annualMin),
+      modeTheorique: d.settings.mode === 'lisse' ? 'lisse' : 'jours-ouvres'
+    },
+    services: d.services,
+    agents: d.agents.map(a => ({
+      id: a.id, prenom: a.prenom, nom: a.nom, service: a.service, poste: a.poste || '', quotite: a.quotite ?? 100,
+      heures: Object.fromEntries(Object.keys(a.heures).sort().map(k => [k, toHHMM(a.heures[k])]))
+    })),
+    heuresSup: [...d.hs].sort((x, y) => x.date.localeCompare(y.date)).map(h => ({
+      id: h.id, agentId: h.agentId, date: h.date, duree: toHHMM(h.min), motif: h.motif || '', compensation: h.comp || 'À définir'
+    }))
+  };
+}
+function clampQ(q) { const n = Number(q); return (!isFinite(n) || n <= 0) ? 100 : Math.min(100, Math.max(1, Math.round(n))); }
+function fromFile(obj) {
+  if (!obj || typeof obj !== 'object' || !Array.isArray(obj.agents)) throw new Error('Ce fichier n\'est pas un fichier de suivi : la liste « agents » est absente.');
+  const p = obj.parametres || {};
+  const daily = parseDuration(p.dureeJournaliere ?? '7:24'), annual = parseDuration(p.baseAnnuelle ?? '1607:00');
+  const d = {
+    settings: { dailyMin: valid(daily) && daily > 0 ? daily : 444, annualMin: valid(annual) && annual > 0 ? annual : 1607 * 60, mode: p.modeTheorique === 'lisse' ? 'lisse' : 'ouvres' },
+    services: Array.isArray(obj.services) && obj.services.length ? obj.services.map(String) : [...DEFAULT_SERVICES],
+    agents: [], hs: []
+  };
+  const seen = new Set();
+  obj.agents.forEach(a => {
+    if (!a || typeof a !== 'object') return;
+    let id = String(a.id || uid('ag')); if (seen.has(id)) id = uid('ag'); seen.add(id);
+    const heures = {};
+    Object.entries(a.heures || {}).forEach(([k, v]) => { const mn = parseDuration(v); if (/^\d{4}-\d{2}$/.test(k) && valid(mn)) heures[k] = mn; });
+    const service = String(a.service || d.services[0]);
+    if (!d.services.includes(service)) d.services.push(service);
+    d.agents.push({ id, prenom: String(a.prenom || ''), nom: String(a.nom || ''), service, poste: String(a.poste || ''), quotite: clampQ(a.quotite), heures });
+  });
+  (obj.heuresSup || []).forEach(h => {
+    if (!h || typeof h !== 'object') return;
+    const mn = parseDuration(h.duree ?? h.heures);
+    if (!valid(mn) || !/^\d{4}-\d{2}-\d{2}$/.test(h.date || '') || !seen.has(String(h.agentId))) return;
+    d.hs.push({ id: String(h.id || uid('hs')), agentId: String(h.agentId), date: h.date, min: mn, motif: String(h.motif || ''), comp: COMPS.includes(h.compensation) ? h.compensation : 'À définir' });
+  });
+  return d;
+}
+
+/* Brouillon local : uniquement s'il reste des modifications non enregistrées */
+let draftTimer = null;
+function scheduleDraft() { clearTimeout(draftTimer); draftTimer = setTimeout(saveDraft, 350); }
+function saveDraft() {
+  try {
+    if (!state.dirty) { localStorage.removeItem(LS_KEY); return; }
+    localStorage.setItem(LS_KEY, JSON.stringify({ at: Date.now(), fileName: state.fileName, data: toFile() }));
+  } catch (e) { /* stockage indisponible : sans conséquence */ }
+}
+function clearDraft() { try { localStorage.removeItem(LS_KEY); } catch (e) {} }
+
+/* Mémorise le dernier fichier ouvert (Chrome / Edge) pour le rouvrir en un clic */
+const idb = {
+  open() { return new Promise((res, rej) => { const r = indexedDB.open('suiviHeuresMairie', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }); },
+  async get(k) { const db = await this.open(); return new Promise((res, rej) => { const t = db.transaction('kv').objectStore('kv').get(k); t.onsuccess = () => res(t.result); t.onerror = () => rej(t.error); }); },
+  async set(k, v) { const db = await this.open(); return new Promise((res, rej) => { const t = db.transaction('kv', 'readwrite'); t.objectStore('kv').put(v, k); t.oncomplete = () => res(); t.onerror = () => rej(t.error); }); }
+};
+async function rememberHandle(h) { try { lastHandle = h; await idb.set('lastHandle', h); } catch (e) {} }
+
+function markChanged() { state.dirty = true; if (state.source === 'none') state.source = 'new'; renderStatus(); scheduleDraft(); }
+
+function loadData(data, { source, name = null, handle = null, silent = false }) {
+  state.data = data; state.source = source; state.fileName = name; fileHandle = handle; state.dirty = false;
+  clearDraft(); pickDefaultPeriod(); state.ui.service = 'Tous'; state.ui.q = ''; $('#search').value = '';
+  closeDrawer(); renderAll({ anim: true });
+  if (!silent) toast(`${source === 'demo' ? 'Données de démo chargées' : `« ${esc(name)} » ouvert`} : ${plural(data.agents.length, 'agent')}`, 'ok');
+}
+function loadFromText(text, name, handle = null) {
+  let obj;
+  try { obj = JSON.parse(text); } catch (e) { toast('Le fichier n\'est pas un JSON valide. Vérifiez qu\'il n\'a pas été modifié par erreur.', 'err'); return false; }
+  let data;
+  try { data = fromFile(obj); } catch (e) { toast(esc(e.message), 'err'); return false; }
+  loadData(data, { source: 'file', name, handle });
+  if (handle) rememberHandle(handle);
+  return true;
+}
+function pickDefaultPeriod() {
+  const keys = new Set();
+  state.data.agents.forEach(a => Object.keys(a.heures).forEach(k => keys.add(k)));
+  state.data.hs.forEach(h => keys.add(h.date.slice(0, 7)));
+  const n = new Date(), cur = mkey(n.getFullYear(), n.getMonth());
+  if (!keys.size || keys.has(cur)) { state.ui.year = n.getFullYear(); state.ui.month = n.getMonth(); return; }
+  const sorted = [...keys].sort(), past = sorted.filter(k => k <= cur);
+  const k = past.length ? past[past.length - 1] : sorted[0];
+  state.ui.year = +k.slice(0, 4); state.ui.month = +k.slice(5, 7) - 1;
+}
+
+async function guardDirty() {
+  if (!state.dirty) return true;
+  return confirmBox({ title: 'Modifications non enregistrées', text: 'Si vous continuez, les modifications faites depuis le dernier enregistrement seront perdues.', ok: 'Continuer sans enregistrer', danger: true });
+}
+
+async function openFile() {
+  if (!(await guardDirty())) return;
+  if (window.showOpenFilePicker) {
+    try {
+      const [h] = await window.showOpenFilePicker({ multiple: false, types: [{ description: 'Fichier de suivi (JSON)', accept: { 'application/json': ['.json'] } }] });
+      const f = await h.getFile();
+      loadFromText(await f.text(), f.name, h);
+    } catch (e) { if (e.name !== 'AbortError') toast('Impossible d\'ouvrir le fichier : ' + esc(e.message), 'err'); }
+  } else $('#fileInput').click();
+}
+async function reopenLast() {
+  if (!lastHandle) return;
+  if (!(await guardDirty())) return;
+  try {
+    let p = lastHandle.queryPermission ? await lastHandle.queryPermission({ mode: 'readwrite' }) : 'granted';
+    if (p !== 'granted') p = await lastHandle.requestPermission({ mode: 'readwrite' });
+    if (p !== 'granted') { toast('Accès au fichier refusé. Utilisez « Ouvrir ».', 'err'); return; }
+    const f = await lastHandle.getFile();
+    loadFromText(await f.text(), f.name, lastHandle);
+  } catch (e) { toast('Le fichier n\'est plus accessible à cet emplacement. Utilisez « Ouvrir ».', 'err'); }
+}
+async function writeHandle(h, text) {
+  if (h.queryPermission && (await h.queryPermission({ mode: 'readwrite' })) !== 'granted') {
+    if ((await h.requestPermission({ mode: 'readwrite' })) !== 'granted') throw new Error('autorisation d\'écriture refusée');
+  }
+  const w = await h.createWritable(); await w.write(text); await w.close();
+}
+function download(text, name) {
+  const url = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
+  const a = Object.assign(document.createElement('a'), { href: url, download: name });
+  document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1500);
+}
+async function save({ as = false } = {}) {
+  closeMenus();
+  if (!state.data.agents.length && state.source === 'none') { toast('Rien à enregistrer pour l\'instant : ajoutez un agent ou ouvrez un fichier.'); return; }
+  const text = JSON.stringify(toFile(), null, 2);
+  const suggested = state.fileName || (state.source === 'demo' ? 'suivi-heures-demo.json' : `suivi-heures-${state.ui.year}.json`);
+  try {
+    if (!as && fileHandle) {
+      await writeHandle(fileHandle, text);
+    } else if (window.showSaveFilePicker) {
+      const h = await window.showSaveFilePicker({ suggestedName: suggested, types: [{ description: 'Fichier de suivi (JSON)', accept: { 'application/json': ['.json'] } }] });
+      await writeHandle(h, text);
+      fileHandle = h; state.fileName = h.name; rememberHandle(h);
+    } else {
+      download(text, suggested); state.fileName = suggested;
+      state.source = 'file'; state.dirty = false; clearDraft(); renderStatus();
+      toast('Fichier téléchargé. Placez-le dans votre dossier Google Drive pour le conserver.', 'ok');
+      return;
+    }
+    state.source = 'file'; state.dirty = false; clearDraft(); renderStatus();
+    toast(`Enregistré dans « ${esc(state.fileName)} »`, 'ok');
+  } catch (e) {
+    if (e.name === 'AbortError') return;
+    toast('L\'enregistrement a échoué : ' + esc(e.message) + '. Essayez « Télécharger une copie ».', 'err');
+  }
+}
+function downloadCopy() {
+  closeMenus();
+  const name = (state.fileName || `suivi-heures-${state.ui.year}.json`).replace(/\.json$/i, '') + `_copie-${todayISO()}.json`;
+  download(JSON.stringify(toFile(), null, 2), name);
+  toast('Copie téléchargée', 'ok');
+}
+async function newFile() {
+  closeMenus();
+  if (!(await guardDirty())) return;
+  loadData(emptyData(), { source: 'new', silent: true });
+  agentModal(null);
+}
+async function loadDemo() {
+  if (state.dirty) { if (!(await guardDirty())) return; }
+  else if (state.data.agents.length && state.source !== 'demo') {
+    const ok = await confirmBox({ title: 'Charger les données de démo ?', text: 'Les données affichées seront remplacées par 7 agents fictifs sur 3 mois. Votre fichier n\'est pas modifié tant que vous n\'enregistrez pas.', ok: 'Charger la démo' });
+    if (!ok) return;
+  }
+  loadData(makeDemo(), { source: 'demo' });
+}
+
+/* =========================================================
+   Données de démo (7 agents, juillet à septembre 2026)
+   ========================================================= */
+function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function makeDemo() {
+  const rnd = mulberry32(20261019), r = (a, b) => a + Math.floor(rnd() * (b - a + 1)), pick = arr => arr[Math.floor(rnd() * arr.length)];
+  const people = [
+    ['Claire', 'Dubois', 'Multi Accueil', 'Directrice de la structure', 100, 3],
+    ['Nadia', 'Benali', 'Multi Accueil', 'Auxiliaire de puériculture', 100, 2],
+    ['Julie', 'Moreau', 'Multi Accueil', 'Éducatrice de jeunes enfants', 80, 1],
+    ['Thomas', 'Garnier', 'Multi Accueil', 'Agent d\'entretien', 100, 1],
+    ['Karim', 'Haddad', 'CMJ', 'Coordinateur du CMJ', 100, 3],
+    ['Léa', 'Fontaine', 'CMJ', 'Animatrice jeunesse', 100, 2],
+    ['Hugo', 'Lambert', 'CMJ', 'Animateur jeunesse', 80, 1]
+  ];
+  const motifs = {
+    'Multi Accueil': ['Réunion avec les parents', 'Remplacement d\'une collègue absente', 'Réunion d\'équipe en soirée', 'Accueil prolongé (retard des parents)', 'Commission d\'attribution des places', 'Préparation de la fête de la crèche', 'Inventaire et rangement du matériel'],
+    'CMJ': ['Séance plénière du CMJ', 'Commission jeunesse', 'Préparation des élections du CMJ', 'Sortie citoyenne du samedi', 'Forum des associations', 'Cérémonie commémorative', 'Réunion avec les élus']
+  };
+  const months = [[2026, 6, 1, 5], [2026, 7, 7, 14], [2026, 8, 0, 3]];
+  const d = emptyData(); let n = 1;
+  people.forEach((p, i) => {
+    const a = { id: `ag-${pad(i + 1)}`, prenom: p[0], nom: p[1], service: p[2], poste: p[3], quotite: p[4], heures: {} };
+    months.forEach(([y, m, lo, hi]) => {
+      const abs = r(lo, hi);
+      let min = Math.round((workingDays(y, m) - abs) * 444 * a.quotite / 100) + r(-6, 12) * 5;
+      a.heures[mkey(y, m)] = Math.max(0, Math.round(min / 5) * 5);
+      const count = m === 7 ? r(0, 1) : r(0, 2) + r(0, p[5]);
+      const days = new Date(y, m + 1, 0).getDate();
+      for (let k = 0; k < count; k++) {
+        d.hs.push({ id: `hs-${String(n++).padStart(4, '0')}`, agentId: a.id, date: `${y}-${pad(m + 1)}-${pad(r(1, days))}`,
+          min: pick([30, 45, 60, 60, 90, 90, 120, 120, 150, 180, 240]), motif: pick(motifs[p[2]]),
+          comp: pick(['Paiement', 'Paiement', 'Récupération', 'Récupération', 'À définir']) });
+      }
+    });
+    d.agents.push(a);
+  });
+  return d;
+}
+
+/* =========================================================
+   Rendu général
+   ========================================================= */
+function renderAll({ anim = false } = {}) {
+  renderStatus(); renderPeriod(); renderServiceSeg(); renderKpis(); renderMain(anim);
+  if (state.ui.drawer) renderDrawer(false);
+  requestAnimationFrame(syncPills);
+}
+function renderMain(anim) { state.ui.view === 'dash' ? renderDash(anim) : renderSaisie(anim); }
+
+function syncPills() {
+  $$('.seg').forEach(g => {
+    const act = g.querySelector('button.active'), pill = g.querySelector('.pill');
+    if (!act || !pill) return;
+    pill.style.left = act.offsetLeft + 'px'; pill.style.width = act.offsetWidth + 'px';
+  });
+}
+
+function renderStatus() {
+  const s = state;
+  let label;
+  if (s.source === 'demo') label = '<span class="chip-demo">Données de démo</span>';
+  else if (s.source === 'file' || s.source === 'draft') label = `<span class="fname">${ic('file', 15)}<b title="${esc(s.fileName || '')}">${esc(s.fileName || 'Brouillon')}</b></span>`;
+  else if (s.source === 'new') label = `<span class="fname">${ic('filePlus', 15)}<b>Nouveau suivi</b></span>`;
+  else label = '<span>Aucun fichier ouvert</span>';
+  let st = '';
+  if (s.dirty) st = '<span class="st dirty"><i class="dot dirty"></i>Modifications non enregistrées</span>';
+  else if (s.source === 'file') st = '<span class="st"><i class="dot saved"></i>Enregistré</span>';
+  $('#fileStatus').innerHTML = label + st;
+  $('#saveBtn').classList.toggle('attn', s.dirty);
+}
+
+function renderPeriod() {
+  const { year, month } = state.ui;
+  $('#monthSel').innerHTML = MONTHS.map((n, i) => `<option value="${i}"${i === month ? ' selected' : ''}>${cap(n)}</option>`).join('');
+  const years = new Set([now0.getFullYear(), year]);
+  state.data.agents.forEach(a => Object.keys(a.heures).forEach(k => years.add(+k.slice(0, 4))));
+  state.data.hs.forEach(h => years.add(+h.date.slice(0, 4)));
+  $('#yearSel').innerHTML = [...years].sort().map(y => `<option value="${y}"${y === year ? ' selected' : ''}>${y}</option>`).join('');
+}
+function shiftMonth(delta) {
+  let m = state.ui.month + delta, y = state.ui.year;
+  if (m < 0) { m = 11; y--; } if (m > 11) { m = 0; y++; }
+  state.ui.month = m; state.ui.year = y; renderAll({ anim: true });
+}
+
+function renderServiceSeg() {
+  const seg = $('#serviceSeg'), cur = state.ui.service;
+  const list = ['Tous', ...state.data.services];
+  if (!list.includes(cur)) state.ui.service = 'Tous';
+  seg.innerHTML = '<span class="pill"></span>' + list.map(s =>
+    `<button data-service="${esc(s)}" class="${s === state.ui.service ? 'active' : ''}">${s === 'Tous' ? 'Tous les services' : `<i class="sdot ${svcCls(s)}"></i>${esc(s)}`}</button>`).join('');
+}
+
+/* Indicateurs animés */
+function animateValue(el, to, format) {
+  const from = el.dataset.v !== undefined ? +el.dataset.v : 0;
+  el.dataset.v = to;
+  cancelAnimationFrame(el._raf);
+  if (from === to || reduceMotion) { el.textContent = format(to); return; }
+  const t0 = performance.now(), dur = 650;
+  const step = t => {
+    const p = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - p, 3);
+    el.textContent = format(from + (to - from) * e);
+    if (p < 1) el._raf = requestAnimationFrame(step);
+  };
+  el._raf = requestAnimationFrame(step);
+}
+function renderKpis() {
+  const box = $('#kpis');
+  if (!state.data.agents.length) { box.hidden = true; return; }
+  box.hidden = false;
+  if (!box.dataset.built) {
+    const defs = [['agents', 'users', 't1'], ['mh', 'clock', 't2'], ['hsm', 'trend', 't3'], ['hsy', 'calendar', 't4']];
+    box.innerHTML = defs.map(([k, i, t]) => `<div class="kpi" data-k="${k}"><div class="kpi-top"><span class="kpi-ic ${t}">${ic(i, 15)}</span><span class="kpi-label"></span></div><div class="kpi-value num"></div><div class="kpi-sub"></div></div>`).join('');
+    box.dataset.built = '1';
+  }
+  const { year: y, month: m, service } = state.ui;
+  const agents = state.data.agents.filter(a => service === 'Tous' || a.service === service);
+  let mh = 0, mt = 0, filled = 0, hsm = 0, hsmN = 0, hsy = 0;
+  agents.forEach(a => {
+    const v = monthHours(a, y, m); if (v !== null) { mh += v; filled++; }
+    mt += theoMonth(a, y, m);
+    const lm = hsMonth(a.id, y, m); hsm += hsSum(lm); hsmN += lm.length;
+    hsy += hsSum(hsYear(a.id, y));
+  });
+  const missing = agents.length - filled;
+  const set = (k, label, val, f, sub) => {
+    const el = box.querySelector(`[data-k="${k}"]`);
+    el.querySelector('.kpi-label').textContent = label;
+    animateValue(el.querySelector('.kpi-value'), val, f);
+    el.querySelector('.kpi-sub').innerHTML = sub;
+  };
+  const perSvc = groupAgents(agents).map(([s, l]) => `${l.length} ${esc(s)}`).join(', ');
+  set('agents', service === 'Tous' ? 'Agents suivis' : `Agents, ${service}`, agents.length, v => String(Math.round(v)), perSvc || '—');
+  set('mh', `Heures travaillées en ${MONTHS[m]}`, mh, v => fmt(v), agents.length
+    ? `sur ${fmt(mt)} théoriques, ${missing ? `<span class="w">${missing} à saisir</span>` : '<span class="g">tout est saisi</span>'}` : '—');
+  set('hsm', `Heures sup en ${MONTHS[m]}`, hsm, v => fmt(v), hsmN ? plural(hsmN, 'saisie') : 'aucune saisie ce mois-ci');
+  set('hsy', `Heures sup cumulées ${y}`, hsy, v => fmt(v), agents.length ? `en moyenne ${fmt(hsy / agents.length)} par agent` : '—');
+}
+
+/* =========================================================
+   Vue tableau de bord
+   ========================================================= */
+function welcomeHTML() {
+  if (state.source !== 'none') {
+    return `<div class="card welcome anim"><div class="w-ic">${ic('users', 26)}</div><h2>Aucun agent pour l'instant</h2>
+      <p>Ajoutez les agents des services Multi Accueil et CMJ, puis saisissez leurs heures mois par mois.</p>
+      <div class="w-actions"><button class="btn btn-primary" data-action="add-agent">${ic('plus')} Ajouter un agent</button></div></div>`;
+  }
+  return `<div class="card welcome anim"><div class="w-ic">${ic('clock', 28)}</div>
+    <h2>Suivi des heures des agents</h2>
+    <p>Ouvrez votre fichier de suivi (.json), par exemple depuis votre dossier Google Drive, ou créez un nouveau suivi.</p>
+    <div class="w-actions">
+      ${lastHandle ? `<button class="btn btn-primary" data-action="reopen">${ic('file')} Rouvrir « ${esc(lastHandle.name)} »</button>` : ''}
+      <button class="btn ${lastHandle ? '' : 'btn-primary'}" data-action="open">${ic('folder')} Ouvrir un fichier</button>
+      <button class="btn" data-action="new-file">${ic('filePlus')} Créer un nouveau suivi</button>
+    </div>
+    <p class="hint">Vous pouvez aussi glisser le fichier sur cette page. Pour découvrir l'outil, cliquez sur « Données de démo » en bas à droite.</p></div>`;
+}
+function th(key, label, cls = '') {
+  const s = state.ui.sort, on = s.key === key;
+  return `<th class="sortable ${cls}${on ? ' sorted' : ''}" data-action="sort" data-key="${key}">${label}<span class="arr">${on ? (s.dir > 0 ? '↑' : '↓') : '↕'}</span></th>`;
+}
+function rowData(a, y, m) {
+  return { a, mh: monthHours(a, y, m), theo: theoMonth(a, y, m), yh: yearHours(a, y), yt: theoYear(a),
+    hsm: hsSum(hsMonth(a.id, y, m)), hsy: hsSum(hsYear(a.id, y)), spark: hsByMonth(a.id, y) };
+}
+const SORTERS = { name: r => norm(`${r.a.nom} ${r.a.prenom}`), mois: r => r.mh ?? -1, annee: r => r.yh, hsMois: r => r.hsm, hsAnnee: r => r.hsy };
+function sortRows(rows) {
+  const { key, dir } = state.ui.sort, g = SORTERS[key] || SORTERS.name;
+  return rows.sort((x, y) => { const a = g(x), b = g(y); return (a < b ? -1 : a > b ? 1 : 0) * dir || SORTERS.name(x).localeCompare(SORTERS.name(y)); });
+}
+function agentCell(a, clickable = false) {
+  const sub = `${esc(a.poste || 'Poste non renseigné')}${(a.quotite ?? 100) < 100 ? `, ${a.quotite}${NBSP}%` : ''}`;
+  const name = clickable ? `<button class="name-btn" data-action="open-agent" data-agent="${esc(a.id)}">${esc(fullName(a))}</button>` : `<div class="name">${esc(fullName(a))}</div>`;
+  return `<div class="agent"><span class="avatar ${svcCls(a.service)}">${esc(initials(a))}</span><div class="agent-txt">${name}<div class="sub">${sub}</div></div></div>`;
+}
+function renderDash(anim) {
+  const area = $('#viewArea');
+  if (!state.data.agents.length) { area.innerHTML = welcomeHTML(); return; }
+  const { year: y, month: m } = state.ui;
+  const agents = visibleAgents();
+  const all = agents.map(a => rowData(a, y, m));
+  const maxSpark = Math.max(60, ...all.flatMap(r => r.spark));
+  const byId = new Map(all.map(r => [r.a.id, r]));
+  const groups = groupAgents(agents);
+  let i = 0, body = '';
+  groups.forEach(([svc, list]) => {
+    const rows = sortRows(list.map(a => byId.get(a.id)));
+    const sum = f => rows.reduce((t, r) => t + (f(r) || 0), 0);
+    body += `<tr class="group"><td><i class="sdot ${svcCls(svc)}"></i>&nbsp; ${esc(svc)} <span class="muted">(${plural(rows.length, 'agent')})</span></td>
+      <td class="num">${fmt(sum(r => r.mh))} <span class="muted">/ ${fmt(sum(r => r.theo))}</span></td>
+      <td class="num">${fmt(sum(r => r.yh))}</td><td class="r num">${fmt(sum(r => r.hsm))}</td><td class="r num">${fmt(sum(r => r.hsy))}</td><td></td><td></td></tr>`;
+    rows.forEach(r => { body += dashRow(r, i++, maxSpark, m); });
+  });
+  if (!agents.length) body = `<tr class="empty-row"><td colspan="7">Aucun agent ne correspond à « ${esc(state.ui.q)} ».</td></tr>`;
+  let foot = '';
+  if (groups.length > 1) {
+    const sum = f => all.reduce((t, r) => t + (f(r) || 0), 0);
+    foot = `<tfoot><tr><td>Total</td><td class="num">${fmt(sum(r => r.mh))} <span class="muted">/ ${fmt(sum(r => r.theo))}</span></td><td class="num">${fmt(sum(r => r.yh))}</td><td class="r num">${fmt(sum(r => r.hsm))}</td><td class="r num">${fmt(sum(r => r.hsy))}</td><td></td><td></td></tr></tfoot>`;
+  }
+  const ms = MONTHS_SHORT[m];
+  area.innerHTML = `<div class="card${anim ? ' anim' : ''}">
+    <div class="card-head"><div><h2>Agents</h2><p>${cap(MONTHS[m])} ${y}. Cliquez sur un agent pour voir le détail de ses heures sup.</p></div>
+      <div class="head-actions"><button class="btn btn-sm" data-action="add-hs">${ic('plus', 14)} Heures sup</button><button class="btn btn-sm" data-action="add-agent">${ic('plus', 14)} Agent</button></div></div>
+    <div class="table-scroll"><table class="grid">
+      <thead><tr>${th('name', 'Agent')}${th('mois', `Heures en ${ms}`)}${th('annee', `Cumul ${y}`)}${th('hsMois', `HS ${ms}`, 'r')}${th('hsAnnee', `HS ${y}`, 'r')}<th>HS par mois</th><th></th></tr></thead>
+      <tbody>${body}</tbody>${foot}
+    </table></div></div>`;
+}
+function dashRow(r, i, maxSpark, m) {
+  const a = r.a;
+  const pm = r.mh === null || !r.theo ? 0 : Math.min(100, r.mh / r.theo * 100);
+  const py = r.yt ? r.yh / r.yt * 100 : 0;
+  const month = r.mh === null
+    ? `<button class="chip" data-action="goto-saisie" data-agent="${esc(a.id)}" title="Saisir les heures du mois">${ic('pencil', 12)} À saisir</button>`
+    : `<div class="val"><b class="num">${fmt(r.mh)}</b> <span class="muted num">/ ${fmt(r.theo)}</span></div><div class="bar${r.mh > r.theo ? ' over' : ''}" title="Écart : ${fmt(r.mh - r.theo, { sign: true })}"><i style="width:${pm}%"></i></div>`;
+  const spark = r.spark.map((v, k) => `<i class="${k === m ? 'on' : v ? 'has' : ''}" style="height:${v ? Math.max(4, v / maxSpark * 26) : 2}px;--k:${k}" title="${cap(MONTHS[k])} : ${fmt(v)}"></i>`).join('');
+  return `<tr class="row" data-action="open-agent" data-agent="${esc(a.id)}" style="--i:${Math.min(i, 24)}">
+    <td>${agentCell(a)}</td>
+    <td>${month}</td>
+    <td><div class="val"><b class="num">${fmt(r.yh)}</b> <span class="muted num">${Math.round(py)}${NBSP}% de ${fmt(r.yt)}</span></div><div class="bar soft"><i style="width:${Math.min(100, py)}%"></i></div></td>
+    <td class="r">${r.hsm ? `<span class="hs-pill num">${fmt(r.hsm)}</span>` : '<span class="faint">—</span>'}</td>
+    <td class="r num">${r.hsy ? `<b>${fmt(r.hsy)}</b>` : '<span class="faint">—</span>'}</td>
+    <td><div class="spark">${spark}</div></td>
+    <td class="r chev">${ic('chevR', 16)}</td></tr>`;
+}
+
+/* =========================================================
+   Vue saisie du mois
+   ========================================================= */
+function ecartHTML(v, theo) {
+  if (v === null || v === undefined) return '<span class="faint">—</span>';
+  const d = v - theo;
+  if (Math.abs(d) < 1) return `<span class="ec ok">${ic('check', 12, 2.6)} conforme</span>`;
+  return d > 0 ? `<span class="ec pos">${fmt(d, { sign: true })}</span>` : `<span class="ec neg">${fmt(d)}</span>`;
+}
+function renderSaisie(anim) {
+  const area = $('#viewArea');
+  if (!state.data.agents.length) { area.innerHTML = welcomeHTML(); return; }
+  const { year: y, month: m } = state.ui, s = state.data.settings, wd = workingDays(y, m);
+  const full = s.mode === 'lisse' ? s.annualMin / 12 : wd * s.dailyMin;
+  const agents = visibleAgents(), groups = groupAgents(agents), k = mkey(y, m);
+  let i = 0, body = '';
+  groups.forEach(([svc, list]) => {
+    body += `<tr class="group"><td colspan="6"><i class="sdot ${svcCls(svc)}"></i>&nbsp; ${esc(svc)} <span class="muted">(${plural(list.length, 'agent')})</span></td></tr>`;
+    [...list].sort((a, b) => norm(a.nom + a.prenom).localeCompare(norm(b.nom + b.prenom))).forEach(a => {
+      const v = monthHours(a, y, m), theo = theoMonth(a, y, m), hsm = hsSum(hsMonth(a.id, y, m));
+      body += `<tr class="srow" style="--i:${Math.min(i++, 24)}">
+        <td>${agentCell(a, true)}</td>
+        <td class="num">${a.quotite ?? 100}${NBSP}%</td>
+        <td class="num muted">${fmt(theo, { full: true })}</td>
+        <td><input class="cell-input num" data-agent="${esc(a.id)}" data-month="${k}" value="${v !== null ? fmt(v, { full: true }) : ''}" placeholder="À saisir" autocomplete="off" spellcheck="false" aria-label="Heures réalisées par ${esc(fullName(a))}"></td>
+        <td class="ec-cell">${ecartHTML(v, theo)}</td>
+        <td class="r nowrap"><span class="hs-cell">${hsm ? `<span class="hs-pill num">${fmt(hsm)}</span>` : '<span class="faint">—</span>'}</span><button class="btn btn-xs" data-action="add-hs" data-agent="${esc(a.id)}" title="Ajouter des heures sup pour ${esc(fullName(a))}">${ic('plus', 12)} HS</button></td></tr>`;
+    });
+  });
+  if (!agents.length) body = `<tr class="empty-row"><td colspan="6">Aucun agent ne correspond à « ${esc(state.ui.q)} ».</td></tr>`;
+  area.innerHTML = `<div class="card${anim ? ' anim' : ''}">
+    <div class="info-strip">
+      <span class="ic">${ic('calendar', 17)}</span>
+      <div class="t"><b>${cap(MONTHS[m])} ${y}</b>
+        <div>${s.mode === 'lisse' ? `Théorique lissé : base annuelle ÷ 12 = ${fmt(full)} à temps plein` : `${wd} jours ouvrés × ${fmt(s.dailyMin)} = ${fmt(full)} à temps plein`}</div></div>
+      <div class="progress" id="saisieProgress"></div>
+      <button class="btn btn-sm" data-action="prefill" title="Remplit uniquement les cases vides avec le temps théorique">${ic('check', 14)} Pré-remplir les cases vides</button>
+    </div>
+    <div class="table-scroll"><table class="grid">
+      <thead><tr><th>Agent</th><th>Quotité</th><th>Théorique</th><th>Heures réalisées</th><th>Écart</th><th class="r">Heures sup du mois</th></tr></thead>
+      <tbody>${body}</tbody></table></div>
+    <div class="saisie-hint">Formats acceptés : <b>151h40</b>, <b>151:40</b> ou <b>151,5</b>. Appuyez sur <kbd>Entrée</kbd> pour passer à l'agent suivant. Laissez vide si les heures ne sont pas encore connues.</div>
+  </div>`;
+  updateSaisieProgress();
+}
+function updateSaisieProgress() {
+  const el = $('#saisieProgress'); if (!el) return;
+  const { year: y, month: m } = state.ui, agents = visibleAgents();
+  const done = agents.filter(a => monthHours(a, y, m) !== null).length, pct = agents.length ? done / agents.length * 100 : 0;
+  el.innerHTML = `<span><b class="num">${done}/${agents.length}</b> saisis</span><div class="bar"><i style="width:${pct}%"></i></div>`;
+}
+function onHoursInput(input) {
+  const a = agentById(input.dataset.agent), k = input.dataset.month;
+  if (!a) return;
+  const v = parseDuration(input.value);
+  if (v !== null && (!valid(v) || v < 0 || v > 400 * 60)) {
+    input.classList.add('err');
+    toast('Durée non reconnue. Exemples : 151h40, 151:40 ou 151,5', 'err');
+    return;
+  }
+  input.classList.remove('err');
+  const before = a.heures[k] ?? null;
+  if (v === null) delete a.heures[k]; else a.heures[k] = v;
+  if (v !== null) input.value = fmt(v, { full: true });
+  if (before !== v) { markChanged(); input.classList.remove('saved'); void input.offsetWidth; input.classList.add('saved'); }
+  const [y, m] = [+k.slice(0, 4), +k.slice(5, 7) - 1], theo = theoMonth(a, y, m);
+  if (input.closest('#drawer')) {
+    const cell = input.closest('.mcell'); if (cell) cell.querySelector('.mec').innerHTML = ecartHTML(v, theo);
+    renderDrawerStats(); renderDrawerYearTotal(); renderMain(false);
+  } else {
+    const tr = input.closest('tr'); if (tr) tr.querySelector('.ec-cell').innerHTML = ecartHTML(v, theo);
+    updateSaisieProgress();
+  }
+  renderKpis();
+}
+function prefill() {
+  const { year: y, month: m } = state.ui, k = mkey(y, m);
+  const targets = visibleAgents().filter(a => monthHours(a, y, m) === null);
+  if (!targets.length) { toast('Toutes les cases sont déjà remplies'); return; }
+  withUndo(`${plural(targets.length, 'case remplie', 'cases remplies')} avec le théorique`, () => { targets.forEach(a => { a.heures[k] = theoMonth(a, y, m); }); }, true);
+}
+
+/* =========================================================
+   Fiche agent (tiroir)
+   ========================================================= */
+function openDrawer(agentId) {
+  if (!agentById(agentId)) return;
+  state.ui.drawer = { agentId, mode: 'mois', y: state.ui.year, m: state.ui.month, sort: { key: 'date', dir: -1 }, group: true };
+  renderDrawer(true);
+  $('#drawer').classList.add('show'); $('#backdrop').classList.add('show'); document.body.classList.add('noscroll');
+  $('#drawer').setAttribute('aria-hidden', 'false');
+  setTimeout(() => $('#drawer [data-action="close-drawer"]')?.focus({ preventScroll: true }), 60);
+}
+function closeDrawer() {
+  if (!state.ui.drawer) return;
+  state.ui.drawer = null;
+  $('#drawer').classList.remove('show'); $('#backdrop').classList.remove('show'); document.body.classList.remove('noscroll');
+  $('#drawer').setAttribute('aria-hidden', 'true');
+}
+function renderDrawer(anim) {
+  const d = state.ui.drawer; if (!d) return;
+  const a = agentById(d.agentId); if (!a) { closeDrawer(); return; }
+  $('#drawer').innerHTML = `
+    <div class="d-head">
+      <div class="agent"><span class="avatar lg ${svcCls(a.service)}">${esc(initials(a))}</span>
+        <div><h2>${esc(fullName(a))}</h2>
+        <div class="sub">${esc(a.poste || 'Poste non renseigné')} <span class="badge ${svcCls(a.service)}">${esc(a.service)}</span>${(a.quotite ?? 100) < 100 ? `<span class="muted">${a.quotite}${NBSP}%</span>` : ''}</div></div></div>
+      <div class="d-actions"><button class="btn btn-sm" data-action="edit-agent" data-agent="${esc(a.id)}">${ic('pencil', 14)} Modifier</button>
+        <button class="btn btn-icon btn-ghost" data-action="close-drawer" title="Fermer (Échap)">${ic('x', 18)}</button></div>
+    </div>
+    <div class="d-body${anim ? ' anim' : ''}" id="dBody">
+      <div class="d-yearbar"><span class="muted">Année affichée</span>
+        <div class="stepper"><button data-action="d-year" data-d="-1" title="Année précédente">${ic('chevL', 15)}</button><b class="num">${d.y}</b><button data-action="d-year" data-d="1" title="Année suivante">${ic('chevR', 15)}</button></div></div>
+      <div class="d-stats" id="dStats"></div>
+      <section class="d-sec"><div class="d-sec-head"><h3>Heures sup par mois</h3><span class="muted">Cliquez sur un mois pour afficher son détail</span></div>
+        <div class="chart" id="dChart"></div></section>
+      <section class="d-sec"><div class="d-sec-head"><h3>Détail des heures sup</h3>
+        <div class="d-tools"><div class="seg sm" id="dModeSeg"><span class="pill"></span>
+          <button data-action="d-mode" data-mode="mois" class="${d.mode === 'mois' ? 'active' : ''}">Par mois</button>
+          <button data-action="d-mode" data-mode="annee" class="${d.mode === 'annee' ? 'active' : ''}">Sur l'année</button></div>
+          <button class="btn btn-sm btn-primary" data-action="d-add-hs">${ic('plus', 14)} Ajouter</button></div></div>
+        <div id="dPeriod"></div><div id="dHs"></div></section>
+      <section class="d-sec"><div class="d-sec-head"><h3>Heures travaillées ${d.y}</h3><span class="muted">Modifiables directement</span></div>
+        <div class="months-grid" id="dMonths"></div><div class="year-total" id="dYearTotal"></div></section>
+    </div>`;
+  renderDrawerStats(); renderDrawerChart(); renderDrawerHs(anim); renderDrawerMonths();
+  requestAnimationFrame(syncPills);
+}
+function renderDrawerStats() {
+  const d = state.ui.drawer; if (!d) return; const a = agentById(d.agentId); if (!a || !$('#dStats')) return;
+  const yh = yearHours(a, d.y), yt = theoYear(a), pct = yt ? yh / yt * 100 : 0;
+  const yl = hsYear(a.id, d.y), ml = hsMonth(a.id, d.y, d.m);
+  const comps = COMPS.map(c => [c, hsSum(yl.filter(h => h.comp === c))]).filter(([, v]) => v);
+  $('#dStats').innerHTML = `
+    <div class="stat"><span>Heures travaillées en ${d.y}</span><b class="num">${fmt(yh)}</b><small>${Math.round(pct)}${NBSP}% de la base annuelle (${fmt(yt)})</small><div class="bar soft"><i style="width:${Math.min(100, pct)}%"></i></div></div>
+    <div class="stat"><span>Heures sup en ${d.y}</span><b class="num">${fmt(hsSum(yl))}</b><small>${yl.length ? plural(yl.length, 'saisie') : 'aucune saisie'}</small></div>
+    <div class="stat"><span>Heures sup en ${MONTHS[d.m]} ${d.y}</span><b class="num">${fmt(hsSum(ml))}</b><small>${ml.length ? plural(ml.length, 'saisie') : 'aucune saisie'}</small></div>
+    <div class="stat"><span>Compensation des heures sup ${d.y}</span><div class="comp">${comps.length ? comps.map(([c, v]) => `<div><i class="cdot ${COMP_CLS[c]}"></i>${c}<b class="num">${fmt(v)}</b></div>`).join('') : '<small class="faint">Aucune heure sup cette année</small>'}</div></div>`;
+}
+function renderDrawerChart() {
+  const d = state.ui.drawer, a = agentById(d.agentId), arr = hsByMonth(a.id, d.y), max = Math.max(60, ...arr);
+  $('#dChart').innerHTML = arr.map((v, i) => `<button class="col${d.mode === 'mois' && d.m === i ? ' sel' : ''}" data-action="d-pick" data-m="${i}" title="${cap(MONTHS[i])} ${d.y} : ${fmt(v)}">
+    <span class="v num">${v ? fmt(v) : ''}</span><span class="b" style="height:${v ? Math.max(5, v / max * 92) : 2}px;--k:${i}"></span><span class="m">${MONTHS_SHORT[i].replace('.', '')}</span></button>`).join('');
+}
+function dth(key, label, cls = '') {
+  const s = state.ui.drawer.sort, on = s.key === key;
+  return `<th class="sortable ${cls}${on ? ' sorted' : ''}" data-action="d-sort" data-key="${key}">${label}<span class="arr">${on ? (s.dir > 0 ? '↑' : '↓') : '↕'}</span></th>`;
+}
+function sortHs(list, { key, dir }) {
+  const g = { date: h => h.date, min: h => h.min, motif: h => norm(h.motif), comp: h => h.comp }[key] || (h => h.date);
+  return [...list].sort((a, b) => { const x = g(a), y = g(b); return ((x < y ? -1 : x > y ? 1 : 0) || (a.date < b.date ? -1 : a.date > b.date ? 1 : 0)) * dir; });
+}
+function hsRow(h, i) {
+  return `<tr class="row" data-action="edit-hs" data-hs="${esc(h.id)}" style="--i:${Math.min(i, 20)}" title="Cliquer pour modifier">
+    <td class="nowrap">${esc(fmtDate(h.date))}</td><td class="r num"><b>${fmt(h.min)}</b></td>
+    <td class="motif">${h.motif ? esc(h.motif) : '<span class="faint">Sans motif</span>'}</td>
+    <td><span class="comp-badge ${COMP_CLS[h.comp] || 'tbd'}">${esc(h.comp)}</span></td>
+    <td class="r"><button class="icon-btn" data-action="del-hs" data-hs="${esc(h.id)}" title="Supprimer">${ic('trash', 15)}</button></td></tr>`;
+}
+function renderDrawerHs(anim) {
+  const d = state.ui.drawer, a = agentById(d.agentId);
+  const list = d.mode === 'mois' ? hsMonth(a.id, d.y, d.m) : hsYear(a.id, d.y);
+  const total = hsSum(list), count = list.length ? `, ${plural(list.length, 'saisie')}` : '';
+  $('#dPeriod').innerHTML = d.mode === 'mois'
+    ? `<div class="mnav"><div class="stepper"><button data-action="d-month" data-d="-1" title="Mois précédent">${ic('chevL', 15)}</button><b style="min-width:120px">${cap(MONTHS[d.m])} ${d.y}</b><button data-action="d-month" data-d="1" title="Mois suivant">${ic('chevR', 15)}</button></div><span class="total">Total <b class="num">${fmt(total)}</b>${count}</span></div>`
+    : `<div class="mnav"><label><input type="checkbox" data-action="d-group"${d.group ? ' checked' : ''}> Regrouper par mois</label><span class="total">Total ${d.y} <b class="num">${fmt(total)}</b>${count}</span></div>`;
+  if (!list.length) {
+    $('#dHs').innerHTML = `<div class="empty-sm">${ic('clock', 20)}<p>Aucune heure sup ${d.mode === 'mois' ? `en ${MONTHS[d.m]} ${d.y}` : `en ${d.y}`}.</p><button class="btn btn-sm" data-action="d-add-hs">${ic('plus', 14)} Ajouter des heures sup</button></div>`;
+    return;
+  }
+  const sorted = sortHs(list, d.sort);
+  let body = '', i = 0;
+  if (d.mode === 'annee' && d.group) {
+    const months = [...new Set(list.map(h => h.date.slice(0, 7)))].sort();
+    if (!(d.sort.key === 'date' && d.sort.dir > 0)) months.reverse();
+    months.forEach(k => {
+      const items = sorted.filter(h => h.date.startsWith(k)), mi = +k.slice(5) - 1;
+      body += `<tr class="subhead"><td colspan="5"><b>${cap(MONTHS[mi])}</b> <span class="muted">(${plural(items.length, 'saisie')})</span><span class="sub-total num">${fmt(hsSum(items))}</span></td></tr>`;
+      items.forEach(h => { body += hsRow(h, i++); });
+    });
+  } else sorted.forEach(h => { body += hsRow(h, i++); });
+  $('#dHs').innerHTML = `<div class="box${anim ? ' anim' : ''}"><div class="table-scroll"><table class="grid compact">
+    <thead><tr>${dth('date', 'Date')}${dth('min', 'Durée', 'r')}${dth('motif', 'Motif')}${dth('comp', 'Compensation')}<th></th></tr></thead>
+    <tbody>${body}</tbody>
+    <tfoot><tr><td>Total</td><td class="r num">${fmt(total)}</td><td colspan="3"></td></tr></tfoot></table></div></div>`;
+}
+function renderDrawerMonths() {
+  const d = state.ui.drawer, a = agentById(d.agentId);
+  let html = '';
+  for (let i = 0; i < 12; i++) {
+    const k = mkey(d.y, i), v = a.heures[k] ?? null, t = theoMonth(a, d.y, i);
+    html += `<div class="mcell${i === d.m ? ' cur' : ''}"><label for="dm-${i}">${cap(MONTHS_SHORT[i])} <span class="num">/ ${fmt(t)}</span></label>
+      <input id="dm-${i}" class="cell-input sm num" data-agent="${esc(a.id)}" data-month="${k}" value="${v !== null ? fmt(v, { full: true }) : ''}" placeholder="À saisir" autocomplete="off" spellcheck="false">
+      <div class="mec">${ecartHTML(v, t)}</div></div>`;
+  }
+  $('#dMonths').innerHTML = html;
+  renderDrawerYearTotal();
+}
+function renderDrawerYearTotal() {
+  const d = state.ui.drawer, a = agentById(d.agentId); if (!a || !$('#dYearTotal')) return;
+  let filled = 0; for (let i = 0; i < 12; i++) if (a.heures[mkey(d.y, i)] !== undefined) filled++;
+  $('#dYearTotal').innerHTML = `<span>Total ${d.y} : <b class="num">${fmt(yearHours(a, d.y))}</b> sur ${fmt(theoYear(a))}</span><span>${plural(filled, 'mois saisi', 'mois saisis')} sur 12</span>`;
+}
+function drawerRefresh() { renderDrawerStats(); renderDrawerChart(); renderDrawerHs(false); requestAnimationFrame(syncPills); }
+function defaultHsDate(y, m) {
+  const t = new Date();
+  return (t.getFullYear() === y && t.getMonth() === m) ? todayISO() : `${y}-${pad(m + 1)}-01`;
+}
+
+/* =========================================================
+   Fenêtres : heures sup, agent, paramètres, confirmation
+   ========================================================= */
+function openModal(html) {
+  $('#modal').innerHTML = html;
+  $('#modalWrap').classList.add('show');
+  setTimeout(() => { const f = $('#modal [autofocus]') || $('#modal input:not([type=radio]):not([type=checkbox]), #modal select'); f && f.focus(); }, 60);
+}
+function closeModal() {
+  $('#modalWrap').classList.remove('show');
+  if (modalResolver) { const r = modalResolver; modalResolver = null; r(false); }
+}
+const modalIsOpen = () => $('#modalWrap').classList.contains('show');
+const closeBtn = `<button type="button" class="btn btn-icon btn-ghost" data-action="close-modal" title="Fermer">${ic('x', 18)}</button>`;
+function confirmBox({ title, text, ok = 'Confirmer', danger = false }) {
+  return new Promise(res => {
+    if (modalResolver) { modalResolver(false); }
+    openModal(`<div class="m-head"><h3>${esc(title)}</h3></div><div class="m-body"><p>${esc(text)}</p></div>
+      <div class="m-foot"><span class="spacer"></span><button class="btn" data-action="confirm-no">Annuler</button><button class="btn ${danger ? 'btn-danger' : 'btn-primary'}" data-action="confirm-yes" autofocus>${esc(ok)}</button></div>`);
+    modalResolver = res;
+  });
+}
+
+function hsModal({ hsId = null, agentId = null, date = null } = {}) {
+  if (!state.data.agents.length) { toast('Ajoutez d\'abord un agent.'); agentModal(null); return; }
+  const h = hsId ? state.data.hs.find(x => x.id === hsId) : null;
+  const agId = h ? h.agentId : agentId;
+  const opts = groupAgents([...state.data.agents]).map(([svc, list]) => `<optgroup label="${esc(svc)}">${
+    [...list].sort((a, b) => norm(a.nom).localeCompare(norm(b.nom))).map(a => `<option value="${esc(a.id)}"${a.id === agId ? ' selected' : ''}>${esc(fullName(a))}</option>`).join('')}</optgroup>`).join('');
+  const motifs = [...new Set(state.data.hs.map(x => x.motif).filter(Boolean))].sort();
+  const comp = h ? h.comp : 'À définir';
+  const dval = h ? h.date : (date || defaultHsDate(state.ui.year, state.ui.month));
+  openModal(`<form id="hsForm" novalidate>
+    <div class="m-head"><h3>${h ? 'Modifier les heures sup' : 'Ajouter des heures sup'}</h3>${closeBtn}</div>
+    <div class="m-body">
+      <div class="field"><label for="f-agent">Agent</label><select class="input" id="f-agent" name="agent"${agId ? '' : ' autofocus'}>${agId ? '' : '<option value="">Choisir un agent</option>'}${opts}</select></div>
+      <div class="row2">
+        <div class="field"><label for="f-date">Date</label><input class="input" type="date" id="f-date" name="date" value="${esc(dval)}"></div>
+        <div class="field"><label for="f-duree">Durée</label><input class="input num" id="f-duree" name="duree" placeholder="ex. 2h30" value="${h ? fmt(h.min, { full: true }) : ''}" autocomplete="off"${agId ? ' autofocus' : ''}>
+          <div class="quick">${['0h30', '1h', '1h30', '2h', '3h', '7h24'].map(q => `<button type="button" class="qchip" data-action="qdur" data-v="${q}">${q}</button>`).join('')}</div></div>
+      </div>
+      <div class="field"><label for="f-motif">Motif</label><input class="input" id="f-motif" name="motif" list="motifList" placeholder="ex. Réunion avec les parents" value="${esc(h ? h.motif : '')}" autocomplete="off">
+        <datalist id="motifList">${motifs.map(x => `<option value="${esc(x)}">`).join('')}</datalist></div>
+      <div class="field"><span class="lbl">Compensation</span><div class="radio-seg">${COMPS.map(c => `<label><input type="radio" name="comp" value="${c}"${c === comp ? ' checked' : ''}><span><i class="cdot ${COMP_CLS[c]}"></i>${c}</span></label>`).join('')}</div></div>
+    </div>
+    <div class="m-foot">${h ? `<button type="button" class="btn btn-danger-ghost" data-action="del-hs" data-hs="${esc(h.id)}">${ic('trash', 14)} Supprimer</button>` : ''}<span class="spacer"></span>
+      <button type="button" class="btn" data-action="close-modal">Annuler</button><button type="submit" class="btn btn-primary">${h ? 'Enregistrer' : 'Ajouter'}</button></div>
+  </form>`);
+  $('#hsForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const f = new FormData(e.target), agentId2 = f.get('agent'), dt = f.get('date'), min = parseDuration(f.get('duree'));
+    $$('#hsForm .input').forEach(x => x.classList.remove('err'));
+    const errs = [];
+    if (!agentId2) errs.push(['f-agent', 'Choisissez un agent.']);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(dt || '')) errs.push(['f-date', 'Indiquez une date.']);
+    if (!valid(min) || min <= 0 || min > 24 * 60) errs.push(['f-duree', 'Indiquez une durée entre 0h01 et 24h (ex. 2h30).']);
+    if (errs.length) { errs.forEach(([id]) => $('#' + id).classList.add('err')); $('#' + errs[0][0]).focus(); toast(errs[0][1], 'err'); return; }
+    const obj = { agentId: agentId2, date: dt, min, motif: String(f.get('motif') || '').trim(), comp: f.get('comp') || 'À définir' };
+    if (h) Object.assign(h, obj); else state.data.hs.push({ id: uid('hs'), ...obj });
+    closeModal(); markChanged();
+    const dr = state.ui.drawer;
+    if (dr && dr.agentId === obj.agentId) { dr.y = +dt.slice(0, 4); if (dr.mode === 'mois') dr.m = +dt.slice(5, 7) - 1; }
+    renderKpis(); renderMain(false); if (dr) renderDrawer(false);
+    const a = agentById(obj.agentId);
+    toast(h ? 'Heures sup modifiées' : `${fmt(min)} ajoutées pour ${esc(fullName(a))}`, 'ok');
+  });
+}
+
+function agentModal(agentId) {
+  const a = agentId ? agentById(agentId) : null;
+  const svc = a ? a.service : (state.ui.service !== 'Tous' ? state.ui.service : state.data.services[0]);
+  const quotites = [...new Set([100, 90, 80, 70, 60, 50, a?.quotite ?? 100])].sort((x, y) => y - x);
+  const nb = a ? state.data.hs.filter(h => h.agentId === a.id).length : 0;
+  openModal(`<form id="agForm" novalidate>
+    <div class="m-head"><h3>${a ? 'Modifier l\'agent' : 'Nouvel agent'}</h3>${closeBtn}</div>
+    <div class="m-body">
+      <div class="row2"><div class="field"><label for="f-prenom">Prénom</label><input class="input" id="f-prenom" name="prenom" value="${esc(a?.prenom || '')}" autocomplete="off" autofocus></div>
+        <div class="field"><label for="f-nom">Nom</label><input class="input" id="f-nom" name="nom" value="${esc(a?.nom || '')}" autocomplete="off"></div></div>
+      <div class="field"><span class="lbl">Service</span><div class="radio-seg">${state.data.services.map(s => `<label><input type="radio" name="service" value="${esc(s)}"${s === svc ? ' checked' : ''}><span><i class="sdot ${svcCls(s)}"></i>${esc(s)}</span></label>`).join('')}</div></div>
+      <div class="row2"><div class="field"><label for="f-poste">Poste</label><input class="input" id="f-poste" name="poste" value="${esc(a?.poste || '')}" placeholder="ex. Auxiliaire de puériculture" autocomplete="off"></div>
+        <div class="field"><label for="f-quotite">Temps de travail</label><select class="input" id="f-quotite" name="quotite">${quotites.map(q => `<option value="${q}"${q === (a?.quotite ?? 100) ? ' selected' : ''}>${q === 100 ? 'Temps plein (100 %)' : `Temps partiel ${q} %`}</option>`).join('')}</select></div></div>
+    </div>
+    <div class="m-foot">${a ? `<button type="button" class="btn btn-danger-ghost" data-action="del-agent" data-agent="${esc(a.id)}" title="${nb ? `Supprime aussi ses ${nb} heures sup` : ''}">${ic('trash', 14)} Supprimer l'agent</button>` : ''}<span class="spacer"></span>
+      <button type="button" class="btn" data-action="close-modal">Annuler</button><button type="submit" class="btn btn-primary">${a ? 'Enregistrer' : 'Ajouter l\'agent'}</button></div>
+  </form>`);
+  $('#agForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const f = new FormData(e.target), prenom = String(f.get('prenom') || '').trim(), nom = String(f.get('nom') || '').trim();
+    $$('#agForm .input').forEach(x => x.classList.remove('err'));
+    if (!prenom || !nom) { (!prenom ? $('#f-prenom') : $('#f-nom')).classList.add('err'); (!prenom ? $('#f-prenom') : $('#f-nom')).focus(); toast('Indiquez le prénom et le nom.', 'err'); return; }
+    const obj = { prenom, nom, service: String(f.get('service') || svc), poste: String(f.get('poste') || '').trim(), quotite: clampQ(f.get('quotite')) };
+    if (a) Object.assign(a, obj); else state.data.agents.push({ id: uid('ag'), heures: {}, ...obj });
+    closeModal(); markChanged(); renderAll({ anim: !a });
+    toast(a ? 'Agent modifié' : `${esc(prenom)} ${esc(nom)} ajouté(e)`, 'ok');
+  });
+}
+
+function settingsModal() {
+  closeMenus();
+  const s = state.data.settings;
+  openModal(`<form id="setForm" novalidate>
+    <div class="m-head"><h3>Paramètres de calcul</h3>${closeBtn}</div>
+    <div class="m-body">
+      <div class="row2">
+        <div class="field"><label for="f-daily">Durée d'une journée</label><input class="input num" id="f-daily" name="daily" value="${fmt(s.dailyMin, { full: true })}" autocomplete="off"><span class="hint">Contrat 35 h : 7h24 par jour</span></div>
+        <div class="field"><label for="f-annual">Base annuelle (temps plein)</label><input class="input num" id="f-annual" name="annual" value="${fmt(s.annualMin)}" autocomplete="off"><span class="hint">1607 h dans la fonction publique</span></div>
+      </div>
+      <div class="field"><span class="lbl">Calcul du temps théorique mensuel</span>
+        <div class="opt-cards">
+          <label><input type="radio" name="mode" value="ouvres"${s.mode !== 'lisse' ? ' checked' : ''}><div><b>Jours ouvrés × durée d'une journée</b><small id="exOuvres"></small></div></label>
+          <label><input type="radio" name="mode" value="lisse"${s.mode === 'lisse' ? ' checked' : ''}><div><b>Lissé sur l'année</b><small id="exLisse"></small></div></label>
+        </div></div>
+    </div>
+    <div class="m-foot"><span class="spacer"></span><button type="button" class="btn" data-action="close-modal">Annuler</button><button type="submit" class="btn btn-primary">Enregistrer</button></div>
+  </form>`);
+  const form = $('#setForm');
+  const upd = () => {
+    const dm = parseDuration(form.daily.value), am = parseDuration(form.annual.value), { year: y, month: m } = state.ui, wd = workingDays(y, m);
+    $('#exOuvres').textContent = valid(dm) ? `${cap(MONTHS[m])} ${y} : ${wd} j × ${fmt(dm)} = ${fmt(wd * dm)}. Les congés apparaissent en écart négatif.` : '';
+    $('#exLisse').textContent = valid(am) ? `Base annuelle ÷ 12 = ${fmt(am / 12)} chaque mois.` : '';
+  };
+  upd(); form.addEventListener('input', upd);
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const dm = parseDuration(form.daily.value), am = parseDuration(form.annual.value);
+    form.daily.classList.toggle('err', !(valid(dm) && dm >= 60 && dm <= 720));
+    form.annual.classList.toggle('err', !(valid(am) && am >= 6000 && am <= 180000));
+    if (form.querySelector('.err')) { toast('Vérifiez les valeurs : journée entre 1h et 12h, base annuelle entre 100h et 3000h.', 'err'); return; }
+    Object.assign(state.data.settings, { dailyMin: dm, annualMin: am, mode: form.mode.value === 'lisse' ? 'lisse' : 'ouvres' });
+    closeModal(); markChanged(); renderAll({ anim: true }); toast('Paramètres enregistrés', 'ok');
+  });
+}
+
+/* Suppressions avec possibilité d'annuler */
+function withUndo(label, mutate, anim = false) {
+  const snap = JSON.stringify(state.data), wasDirty = state.dirty;
+  mutate(); markChanged(); renderAll({ anim });
+  toast(label, 'ok', { label: 'Annuler', fn: () => {
+    state.data = JSON.parse(snap); state.dirty = wasDirty; renderStatus(); scheduleDraft();
+    if (state.ui.drawer && !agentById(state.ui.drawer.agentId)) closeDrawer();
+    renderAll({ anim: false });
+  } });
+}
+function deleteHs(id) {
+  const h = state.data.hs.find(x => x.id === id); if (!h) return;
+  if (modalIsOpen()) closeModal();
+  withUndo(`Heures sup du ${esc(fmtDate(h.date))} supprimées`, () => { state.data.hs = state.data.hs.filter(x => x.id !== id); });
+}
+function deleteAgent(id) {
+  const a = agentById(id); if (!a) return;
+  closeModal(); closeDrawer();
+  withUndo(`${esc(fullName(a))} supprimé(e)`, () => {
+    state.data.agents = state.data.agents.filter(x => x.id !== id);
+    state.data.hs = state.data.hs.filter(x => x.agentId !== id);
+  });
+}
+
+/* Notifications */
+function toast(msg, type = '', action = null) {
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.setAttribute('role', type === 'err' ? 'alert' : 'status');
+  el.innerHTML = `<span class="t-ic">${type === 'ok' ? ic('check', 12, 3) : type === 'err' ? '!' : ic('clock', 12, 2.5)}</span><span>${msg}</span>`;
+  let timer;
+  const remove = () => { clearTimeout(timer); el.classList.add('out'); setTimeout(() => el.remove(), 230); };
+  if (action) { const b = document.createElement('button'); b.textContent = action.label; b.onclick = () => { action.fn(); remove(); }; el.append(b); }
+  const box = $('#toasts'); box.append(el);
+  while (box.children.length > 3) box.firstElementChild.remove();
+  timer = setTimeout(remove, action ? 6500 : (type === 'err' ? 5000 : 3200));
+}
+
+function closeMenus() { $('#mainMenu').classList.remove('open'); }
+function setView(v) {
+  if (state.ui.view === v) return;
+  state.ui.view = v;
+  $$('#viewSeg button').forEach(b => b.classList.toggle('active', b.dataset.view === v));
+  syncPills(); renderMain(true);
+}
+
+/* =========================================================
+   Événements
+   ========================================================= */
+document.addEventListener('click', e => {
+  if (!e.target.closest('.menu-anchor')) closeMenus();
+  const t = e.target.closest('[data-action],[data-view],[data-service]');
+  if (!t) return;
+  if (t.dataset.view) { setView(t.dataset.view); return; }
+  if (t.dataset.service) {
+    if (state.ui.service === t.dataset.service) return;
+    state.ui.service = t.dataset.service;
+    $$('#serviceSeg button').forEach(b => b.classList.toggle('active', b.dataset.service === state.ui.service));
+    syncPills(); renderKpis(); renderMain(true); return;
+  }
+  const act = t.dataset.action, d = state.ui.drawer;
+  switch (act) {
+    case 'open': openFile(); break;
+    case 'reopen': reopenLast(); break;
+    case 'save': save(); break;
+    case 'save-as': save({ as: true }); break;
+    case 'download': downloadCopy(); break;
+    case 'new-file': newFile(); break;
+    case 'settings': settingsModal(); break;
+    case 'toggle-menu': $('#mainMenu').classList.toggle('open'); break;
+    case 'load-demo': loadDemo(); break;
+    case 'prev-month': shiftMonth(-1); break;
+    case 'next-month': shiftMonth(1); break;
+    case 'sort': {
+      const k = t.dataset.key, s = state.ui.sort;
+      if (s.key === k) s.dir *= -1; else { s.key = k; s.dir = k === 'name' ? 1 : -1; }
+      renderMain(false); break;
+    }
+    case 'open-agent': openDrawer(t.dataset.agent); break;
+    case 'goto-saisie': {
+      e.stopPropagation(); setView('saisie');
+      const inp = $(`#viewArea .cell-input[data-agent="${CSS.escape(t.dataset.agent)}"]`);
+      if (inp) { inp.scrollIntoView({ block: 'center', behavior: reduceMotion ? 'auto' : 'smooth' }); setTimeout(() => inp.focus(), 250); }
+      break;
+    }
+    case 'add-agent': agentModal(null); break;
+    case 'edit-agent': agentModal(t.dataset.agent); break;
+    case 'del-agent': deleteAgent(t.dataset.agent); break;
+    case 'add-hs': hsModal({ agentId: t.dataset.agent || null }); break;
+    case 'edit-hs': hsModal({ hsId: t.dataset.hs }); break;
+    case 'del-hs': e.stopPropagation(); deleteHs(t.dataset.hs); break;
+    case 'qdur': { const inp = $('#f-duree'); if (inp) { inp.value = t.dataset.v; inp.classList.remove('err'); inp.focus(); } break; }
+    case 'prefill': prefill(); break;
+    case 'close-modal': closeModal(); break;
+    case 'confirm-yes': { const r = modalResolver; modalResolver = null; closeModal(); r && r(true); break; }
+    case 'confirm-no': closeModal(); break;
+    case 'close-drawer': closeDrawer(); break;
+    case 'd-year': if (d) { d.y += +t.dataset.d; renderDrawer(true); } break;
+    case 'd-month': if (d) {
+      let m = d.m + +t.dataset.d, y = d.y;
+      if (m < 0) { m = 11; y--; } if (m > 11) { m = 0; y++; }
+      if (y !== d.y) { d.y = y; d.m = m; renderDrawer(true); } else { d.m = m; drawerRefresh(); $$('#dMonths .mcell').forEach((c, i) => c.classList.toggle('cur', i === m)); }
+    } break;
+    case 'd-pick': if (d) { d.mode = 'mois'; d.m = +t.dataset.m; $$('#dModeSeg button').forEach(b => b.classList.toggle('active', b.dataset.mode === 'mois')); drawerRefresh(); $$('#dMonths .mcell').forEach((c, i) => c.classList.toggle('cur', i === d.m)); } break;
+    case 'd-mode': if (d && d.mode !== t.dataset.mode) { d.mode = t.dataset.mode; $$('#dModeSeg button').forEach(b => b.classList.toggle('active', b.dataset.mode === d.mode)); renderDrawerChart(); renderDrawerHs(true); syncPills(); } break;
+    case 'd-sort': if (d) { const s = d.sort, k = t.dataset.key; if (s.key === k) s.dir *= -1; else { s.key = k; s.dir = (k === 'motif' || k === 'comp') ? 1 : -1; } renderDrawerHs(false); } break;
+    case 'd-group': if (d) { d.group = t.checked; renderDrawerHs(false); } break;
+    case 'd-add-hs': if (d) hsModal({ agentId: d.agentId, date: d.mode === 'mois' ? defaultHsDate(d.y, d.m) : null }); break;
+  }
+});
+document.addEventListener('change', e => {
+  const t = e.target;
+  if (t.classList.contains('cell-input')) onHoursInput(t);
+  else if (t.id === 'monthSel') { state.ui.month = +t.value; renderAll({ anim: true }); }
+  else if (t.id === 'yearSel') { state.ui.year = +t.value; renderAll({ anim: true }); }
+});
+document.addEventListener('input', e => {
+  if (e.target.id === 'search') { state.ui.q = e.target.value; renderMain(false); }
+  else if (e.target.classList.contains('cell-input')) e.target.classList.remove('err');
+});
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+    e.preventDefault();
+    if (document.activeElement?.classList.contains('cell-input')) document.activeElement.blur();
+    save(); return;
+  }
+  if (e.key === 'Escape') {
+    if (modalIsOpen()) { e.preventDefault(); closeModal(); }
+    else if ($('#mainMenu').classList.contains('open')) closeMenus();
+    else if (state.ui.drawer) closeDrawer();
+    return;
+  }
+  const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName);
+  if (e.key === '/' && !typing && !modalIsOpen()) { e.preventDefault(); $('#search').focus(); return; }
+  if (e.key === 'Enter' && e.target.classList?.contains('cell-input')) {
+    e.preventDefault();
+    const scope = e.target.closest('#drawer') || $('#viewArea');
+    const list = $$('.cell-input', scope), i = list.indexOf(e.target), next = list[i + (e.shiftKey ? -1 : 1)];
+    if (next) { next.focus(); next.select(); } else e.target.blur();
+  }
+  if (e.key === 'Enter' && e.target.closest('tr.row') && e.target.matches('tr.row')) e.target.click();
+});
+$('#modalWrap').addEventListener('mousedown', e => { if (e.target.id === 'modalWrap') closeModal(); });
+$('#backdrop').addEventListener('click', closeDrawer);
+$('#fileInput').addEventListener('change', async e => {
+  const f = e.target.files[0]; e.target.value = '';
+  if (f) loadFromText(await f.text(), f.name, null);
+});
+window.addEventListener('resize', () => { clearTimeout(window.__rz); window.__rz = setTimeout(syncPills, 80); });
+window.addEventListener('beforeunload', e => { if (state.dirty) { saveDraft(); e.preventDefault(); e.returnValue = ''; } });
+
+/* Glisser-déposer d'un fichier JSON */
+let dragDepth = 0;
+const hasFiles = e => [...(e.dataTransfer?.types || [])].includes('Files');
+window.addEventListener('dragenter', e => { if (!hasFiles(e)) return; e.preventDefault(); dragDepth++; $('#drop').classList.add('show'); });
+window.addEventListener('dragover', e => { if (hasFiles(e)) e.preventDefault(); });
+window.addEventListener('dragleave', e => { if (!hasFiles(e)) return; if (--dragDepth <= 0) { dragDepth = 0; $('#drop').classList.remove('show'); } });
+window.addEventListener('drop', async e => {
+  if (!hasFiles(e)) return;
+  e.preventDefault(); dragDepth = 0; $('#drop').classList.remove('show');
+  const item = e.dataTransfer.items && e.dataTransfer.items[0];
+  const hp = item && item.getAsFileSystemHandle ? item.getAsFileSystemHandle().catch(() => null) : Promise.resolve(null);
+  const file = e.dataTransfer.files[0];
+  if (!file) return;
+  if (!/\.json$/i.test(file.name)) { toast('Déposez un fichier .json', 'err'); return; }
+  if (!(await guardDirty())) return;
+  const h = await hp;
+  loadFromText(await file.text(), file.name, h && h.kind === 'file' ? h : null);
+});
+
+/* =========================================================
+   Démarrage
+   ========================================================= */
+function initStatic() {
+  $('#brandMark').innerHTML = ic('clock', 20, 2.2);
+  $('#openBtn').innerHTML = `${ic('folder')}<span class="lbl">Ouvrir</span>`;
+  $('#saveBtn').innerHTML = `${ic('save')}<span class="lbl">Enregistrer</span><i class="bdot"></i>`;
+  $('#moreBtn').innerHTML = ic('more', 18, 3);
+  $('#prevBtn').innerHTML = ic('chevL'); $('#nextBtn').innerHTML = ic('chevR');
+  $('#searchIc').innerHTML = ic('search');
+  $('#dropInner').insertAdjacentHTML('afterbegin', ic('upload', 34, 1.8));
+  $('#foot').textContent = `Suivi des heures ${APP_VERSION}`;
+  $('#mainMenu').innerHTML = `
+    <button data-action="save-as">${ic('saveAs')} Enregistrer sous…</button>
+    <button data-action="download">${ic('download')} Télécharger une copie</button>
+    <button data-action="new-file">${ic('filePlus')} Nouveau suivi vide</button>
+    <hr><button data-action="settings">${ic('sliders')} Paramètres de calcul</button>`;
+}
+async function init() {
+  initStatic();
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (raw) {
+      const dr = JSON.parse(raw);
+      if (dr && dr.data) {
+        state.data = fromFile(dr.data); state.source = 'draft'; state.fileName = dr.fileName || null; state.dirty = true;
+        pickDefaultPeriod();
+        setTimeout(() => toast('Vos modifications non enregistrées ont été restaurées. Pensez à enregistrer.'), 500);
+      }
+    }
+  } catch (e) { clearDraft(); }
+  try { if (window.indexedDB && window.showOpenFilePicker) lastHandle = (await idb.get('lastHandle')) || null; } catch (e) { lastHandle = null; }
+  renderAll({ anim: true });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(syncPills);
+}
+init();
+
+// Accès pour les tests et le débogage depuis la console
+window.__suivi = { state, parseDuration, fmt, workingDays, toFile, fromFile };
+})();
+</script>
+</body>
+</html>
